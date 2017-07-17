@@ -3,14 +3,17 @@ Config.set('graphics', 'resizable', '0') #0 being off 1 being on as in true/fals
 Config.set('graphics', 'width', '800')
 Config.set('graphics', 'height', '480')
 from kivy.graphics.vertex_instructions import (Rectangle, Ellipse, Line)
+from kivy.graphics import Color
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import ListProperty, NumericProperty, StringProperty
 from kivy.uix.button import Button
-# from kivy.uix.label import Label
-# from kivy.uix.image import Image
-
+from kivy.uix.label import Label
+from kivy.uix.image import Image
+from kivy.clock import Clock
+from functools import partial
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
 
 from kivy.lang import Builder
 from kivy.graphics.texture import Texture
@@ -21,6 +24,21 @@ from climate_screen import climate_screen_kv, ClimateScreen
 from music_screen import music_screen_kv
 
 Builder.load_string("""
+#:import partial functools
+
+<Logo>:
+    source: 'rsc/logo/InfinityCliffLogoClear-Red.png'
+    size_hint: None, None
+    size: root.height, root.height
+    center: root.center
+    allow_stretch: True
+    keep_ratio: False
+    opacity: 0.5
+    
+<FrontGlass>:
+    id: frontglass
+    FloatLayout:
+        id: frontglasslayout 
 
 <HOMEButton@Button>
     size_hint_x: None
@@ -53,9 +71,8 @@ Builder.load_string("""
     background_color: [0, 0, 0, 0]
 
 
-                    
 <MENUButtons>
-    HOMEButton
+    HOMEButton:
     SETButton:
     
 <HomeScreen>:
@@ -91,7 +108,7 @@ Builder.load_string("""
     id: 'phone'
     FloatLayout:
         Image:
-            source: 'rsc/Menu_Phone.png'
+            source: 'rsc/screens/Menu_Phone.png'
             allow_stretch: False   
         Label:
             text: 'Phone Screen'
@@ -103,16 +120,40 @@ Builder.load_string("""
     id: 'nav'
     FloatLayout:
         Image:
-            source: 'rsc/Menu_Nav.png'
+            source: 'rsc/screens/Menu_Nav.png'
             allow_stretch: False   
         Label:
             text: 'Navigation Screen'
         HOMEButton:
             on_release: root.manager.current = 'home' 
             
-
-                        
+<QuitMenu>:
+    BoxLayout:
+        id: popup
+        size_hint: None, None
+        orientation: 'vertical'
+        Button:
+            id: quit_button
+            on_release: quit()
+            size_hint: None, None
+            size: self.texture_size
+            Image:
+                size_hint: None, None
+                size: self.texture_size
+                source: 'rsc/buttons/quit_car_pc.png'
+                pos: self.parent.pos
+        Button:
+            id: cancel
+            size_hint: None, None
+            size: quit_button.texture_size
+            Image:
+                size_hint: None, None
+                size: self.texture_size
+                source: 'rsc/buttons/cancel.png'
+                pos: self.parent.pos
+                                        
 """ + climate_screen_kv + music_screen_kv)
+
 
 class Gradient(object):
     @staticmethod
@@ -167,13 +208,56 @@ class MusicScreen(Screen):
     pass
 
 
-
-
 class SettingsScreen(Screen):
     pass
 
 
-class Console(BoxLayout):
+class Logo(Image):
+    pass
+
+
+class QuitMenu(BoxLayout):
+    pass
+
+
+class FrontGlass(Label):
+    def __init__(self, **kwargs):
+        super(FrontGlass, self).__init__(**kwargs)
+        self.id = 'frontglass'
+        self.bind(
+            on_touch_down=self.create_clock,
+            on_touch_up=self.delete_clock)
+        self.menu_up = False
+
+    def create_clock(self, widget, touch, *args):
+        callback = partial(self.menu, touch)
+        Clock.schedule_once(callback, 2)
+        touch.ud['event'] = callback
+
+    def delete_clock(self, widget, touch, *args):
+        Clock.unschedule(touch.ud['event'])
+
+    def menu(self, touch, *args):
+        with self.canvas.before:
+            Color(0.05, 0.05, 0.05, 0.5)
+            Rectangle(size=self.parent.size)
+        logo = Logo()
+        self.add_widget(logo)
+        logo.size = self.parent.height-145, self.parent.height-145
+        logo.center = self.parent.center
+        quitmenu = QuitMenu(center=touch.pos)
+        cancel = quitmenu.ids.cancel
+        cancel.bind(on_release=partial(self.cancel_menu, quitmenu, logo))
+
+        self.add_widget(quitmenu)
+
+    def cancel_menu(self, widget, logo, *args):
+        self.remove_widget(widget)
+        self.remove_widget(logo)
+        self.canvas.before.clear()
+
+
+class Console(FloatLayout):
     def __init__(self, **kwargs):
         super(Console, self).__init__(**kwargs)
 
@@ -186,6 +270,7 @@ sm.add_widget(MusicScreen(name='music'))
 sm.add_widget(ClimateScreen(name='climate'))
 sm.add_widget(SettingsScreen(name='settings'))
 sm.transition = NoTransition()
+sm.index = -1
 
 
 class ConsoleApp(App):
@@ -193,8 +278,10 @@ class ConsoleApp(App):
     init_state = {}
 
     def build(self):
-
-        return sm
+        self.root = Console()
+        self.root.add_widget(FrontGlass(), index=0)
+        self.root.add_widget(sm, index=1)
+        return self.root
 
     def set_controller(self, controller):
         self.carputer = controller

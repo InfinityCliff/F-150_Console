@@ -10,7 +10,7 @@ music_screen_kv = """
     
 <MusicScreen>:
     ipod_tab_header: ipod_tab_header
-    id: music
+    #id: music
     FloatLayout:
         Image:
             source: 'rsc/screens/Music.png'
@@ -102,16 +102,8 @@ class IpodPanel(BoxLayout):
 
     def __init__(self, **kwargs):
         super(IpodPanel, self).__init__(**kwargs)
-        #self.id = 'iPod'
-        #self.size_hint_y = None
-        #self.x = 0
-        #self.y = 70
-        #self.height = 355
-        self.tab_list = ['Artist', 'Albums', 'Songs', 'Playlist']
 
-        #self.ipod_tab_header = TabbedPageHeader()
-        #self.ipod_tab_header.add_tab_headers(self.tab_list)
-        #self.add_widget(self.ipod_tab_header)
+        self.tab_list = ['Artist', 'Albums', 'Songs', 'Playlist']
 
         self.ipod_tab_page = TabbedPage()
         self.add_widget(self.ipod_tab_page)
@@ -127,6 +119,7 @@ class MusicScreen(Screen):
 
     def __init__(self, **kwargs):
         super(MusicScreen, self).__init__(**kwargs)
+        self.id = 'music'
 
     def send_CANBUS(self, code):
         # TODO will translate buttun presses to appropriate can-bus codes and send
