@@ -23,6 +23,8 @@ from kivy.uix.screenmanager import NoTransition
 from climate_screen import climate_screen_kv, ClimateScreen
 from music_screen import music_screen_kv
 
+import kwad
+
 Builder.load_string("""
 #:import partial functools
 
@@ -130,28 +132,28 @@ Builder.load_string("""
 <QuitMenu>:
     BoxLayout:
         id: popup
+        #a: self.show_area('y')
         size_hint: None, None
+        height: quit_button.height + cancel.height
+        width: max(quit_button.width, cancel.width)
         orientation: 'vertical'
         Button:
             id: quit_button
             on_release: quit()
             size_hint: None, None
-            size: self.texture_size
-            Image:
-                size_hint: None, None
-                size: self.texture_size
-                source: 'rsc/buttons/quit_car_pc.png'
-                pos: self.parent.pos
+            size: 290, 30
+            #a: self.show_area('o')
+            #background_color: [0, 0, 0, .5]
+            background_normal: 'rsc/buttons/quit_car_pc.png'
         Button:
             id: cancel
+            #a: self.show_area('g')            
             size_hint: None, None
-            size: quit_button.texture_size
-            Image:
-                size_hint: None, None
-                size: self.texture_size
-                source: 'rsc/buttons/cancel.png'
-                pos: self.parent.pos
-                                        
+            size: 80, 30
+            pos_hint: {'center_x': 0.5, 'y': 1}
+            #background_color: [0, 0, 0, .5]
+            background_normal: 'rsc/buttons/cancel.png'
+                
 """ + climate_screen_kv + music_screen_kv)
 
 
@@ -228,7 +230,7 @@ class FrontGlass(Label):
             on_touch_down=self.create_clock,
             on_touch_up=self.delete_clock)
         self.menu_up = False
-
+        kwad.attach()
     def create_clock(self, widget, touch, *args):
         callback = partial(self.menu, touch)
         Clock.schedule_once(callback, 2)
@@ -250,6 +252,8 @@ class FrontGlass(Label):
         cancel.bind(on_release=partial(self.cancel_menu, quitmenu, logo))
 
         self.add_widget(quitmenu)
+        quitmenu.center = touch.pos
+
 
     def cancel_menu(self, widget, logo, *args):
         self.remove_widget(widget)
@@ -271,6 +275,7 @@ sm.add_widget(ClimateScreen(name='climate'))
 sm.add_widget(SettingsScreen(name='settings'))
 sm.transition = NoTransition()
 sm.index = -1
+
 
 
 class ConsoleApp(App):
