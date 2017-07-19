@@ -6,24 +6,23 @@ from kivy.graphics.vertex_instructions import (Rectangle, Ellipse, Line)
 from kivy.graphics import Color
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import NoTransition
 from kivy.properties import ListProperty, NumericProperty, StringProperty
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.image import Image
-from kivy.clock import Clock
-from functools import partial
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 
 from kivy.lang import Builder
 from kivy.graphics.texture import Texture
 
-from kivy.uix.screenmanager import NoTransition
 
 from climate_screen import climate_screen_kv, ClimateScreen
-from music_screen import music_screen_kv
+from music_screen import music_screen_kv, MusicScreen
+from phone_screen import phone_screen_kv, PhoneScreen
+from front_glass import front_glass_kv, FrontGlass
 
-import kwad
 
 Builder.load_string("""
 #:import partial functools
@@ -35,12 +34,9 @@ Builder.load_string("""
     center: root.center
     allow_stretch: True
     keep_ratio: False
-    opacity: 0.5
+    #opacity: 0.5
     
-<FrontGlass>:
-    id: frontglass
-    FloatLayout:
-        id: frontglasslayout 
+
 
 <HOMEButton@Button>
     size_hint_x: None
@@ -129,52 +125,9 @@ Builder.load_string("""
         HOMEButton:
             on_release: root.manager.current = 'home' 
             
-<QuitMenu>:
-    BoxLayout:
-        id: popup
-        #a: self.show_area('y')
-        size_hint: None, None
-        height: quit_button.height + cancel.height
-        width: max(quit_button.width, cancel.width)
-        orientation: 'vertical'
-        Button:
-            id: quit_button
-            on_release: quit()
-            size_hint: None, None
-            size: 290, 30
-            #a: self.show_area('o')
-            #background_color: [0, 0, 0, .5]
-            background_normal: 'rsc/buttons/quit_car_pc.png'
-        Button:
-            id: cancel
-            #a: self.show_area('g')            
-            size_hint: None, None
-            size: 80, 30
-            pos_hint: {'center_x': 0.5, 'y': 1}
-            #background_color: [0, 0, 0, .5]
-            background_normal: 'rsc/buttons/cancel.png'
-                
-""" + climate_screen_kv + music_screen_kv)
 
+""" + climate_screen_kv + music_screen_kv + phone_screen_kv + front_glass_kv)
 
-class Gradient(object):
-    @staticmethod
-    def horizontal(rgba_left, rgba_right):
-        texture = Texture.create(size=(2, 1), colorfmt="rgba")
-        pixels = rgba_left + rgba_right
-        pixels = [chr(int(v * 255)) for v in pixels]
-        buf = ''.join(pixels)
-        texture.blit_buffer(buf, colorfmt='rgba', bufferfmt='ubyte')
-        return texture
-
-    @staticmethod
-    def vertical(rgba_top, rgba_bottom):
-        texture = Texture.create(size=(1, 2), colorfmt="rgba")
-        pixels = rgba_bottom + rgba_top
-        pixels = [chr(int(v * 255)) for v in pixels]
-        buf = ''.join(pixels)
-        texture.blit_buffer(buf, colorfmt='rgba', bufferfmt='ubyte')
-        return texture
 
 class CTLButton(Button):
     def __init__(self, **kwargs):
@@ -198,67 +151,12 @@ class HOMEButton(Button):
     pass
 
 
-class PhoneScreen(Screen):
-    pass
-
-
 class NavigationScreen(Screen):
-    pass
-
-
-class MusicScreen(Screen):
     pass
 
 
 class SettingsScreen(Screen):
     pass
-
-
-class Logo(Image):
-    pass
-
-
-class QuitMenu(BoxLayout):
-    pass
-
-
-class FrontGlass(Label):
-    def __init__(self, **kwargs):
-        super(FrontGlass, self).__init__(**kwargs)
-        self.id = 'frontglass'
-        self.bind(
-            on_touch_down=self.create_clock,
-            on_touch_up=self.delete_clock)
-        self.menu_up = False
-        kwad.attach()
-    def create_clock(self, widget, touch, *args):
-        callback = partial(self.menu, touch)
-        Clock.schedule_once(callback, 2)
-        touch.ud['event'] = callback
-
-    def delete_clock(self, widget, touch, *args):
-        Clock.unschedule(touch.ud['event'])
-
-    def menu(self, touch, *args):
-        with self.canvas.before:
-            Color(0.05, 0.05, 0.05, 0.5)
-            Rectangle(size=self.parent.size)
-        logo = Logo()
-        self.add_widget(logo)
-        logo.size = self.parent.height-145, self.parent.height-145
-        logo.center = self.parent.center
-        quitmenu = QuitMenu(center=touch.pos)
-        cancel = quitmenu.ids.cancel
-        cancel.bind(on_release=partial(self.cancel_menu, quitmenu, logo))
-
-        self.add_widget(quitmenu)
-        quitmenu.center = touch.pos
-
-
-    def cancel_menu(self, widget, logo, *args):
-        self.remove_widget(widget)
-        self.remove_widget(logo)
-        self.canvas.before.clear()
 
 
 class Console(FloatLayout):
@@ -275,7 +173,6 @@ sm.add_widget(ClimateScreen(name='climate'))
 sm.add_widget(SettingsScreen(name='settings'))
 sm.transition = NoTransition()
 sm.index = -1
-
 
 
 class ConsoleApp(App):
