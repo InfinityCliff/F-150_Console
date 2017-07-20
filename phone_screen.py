@@ -1,22 +1,49 @@
-from kivy.uix.screenmanager import Screen
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import NoTransition
+
 from kivy.uix.boxlayout import BoxLayout
+
 from kivy.uix.label import Label
 from kivy.uix.button import Button
+
 from kivy.properties import StringProperty, ObjectProperty, ListProperty
+import re
 
 
-phone_screen_kv = """
+dialer_screen_kv_ = """
+    
+# --- Call Menu-------------------------------------
+<CallMenu@BoxLayout>:
+    orientation: 'vertical'
+    size_hint: None, None
+    size: 75, 280
+    pos: 165, 120
+    Button:
+        text: 'dial'
+    Button:
+        text: 'hang'
+# ^-- Call Menu -----------------------------------^
+
+# --- Dial Pad -------------------------------------    
 <NumberButton@Button>
     id: btn
     num: '-1'
     on_release: root.change_number(self.num)
+    halign: 'center'
 
 <DialPad>:
     id: dial_pad
     phone_number: phonenumber
     orientation: 'vertical'
+    size_hint: None, None
+    size: 280, 280
+    x: self.parent.center_x - self.width/2
+    y: 120
     Label:
         id: phonenumber
+        size_hint_y: None
+        height: 40
+        font_size: 30
     GridLayout:
         id: phone_grid
         cols: 3
@@ -56,12 +83,30 @@ phone_screen_kv = """
         NumberButton:
             num: '#'
             text: "#\\n"
+# ^-- Dial Pad ------------------------------------^
 
-<PhoneScreen>:
-    id: phone_screen
+<Dialer>:
+    id: dialer
+    PhoneMenu:
+    CallMenu:
     DialPad:
+    Button:
+        id: contact_photo
+        size_hint: None, None
+        size: 170, 170
+        pos: 600, 230
+    Label:
+        id: contact_name
+        size_hint: None, None
+        width: self.parent.ids.contact_photo.width
+        height: 30
+        x: self.parent.ids.contact_photo.x
+        y: self.parent.ids.contact_photo.y - self.height-5
+        text: 'default'
 """
 
+class Dialer(Screen):
+    pass
 
 class DialPad(BoxLayout):
     phone_number = ObjectProperty(None)
@@ -70,15 +115,21 @@ class DialPad(BoxLayout):
     def format_(self):
         ds = self.digitstring
         pn = self.phone_number
-        ds_str = ''.join(ds[:])
+        ds_str = ''.join(ds[:]) + ' ' * ((11 if ds[0] == '1' else 10) - len(ds))
 
-        mask = '%s' * len(ds)
         if ds[0] == '1':
-            if len(ds) < 4:
-                ds_str += ' '*(4-len(ds))
-            mask = '%s (' + '%s'*(3  )'
+            mask = '%s (%s%s%s) %s%s%s %s%s%s%s'
+            if len(ds) > 6:
+                mask = '%s (%s%s%s) %s%s%s-%s%s%s%s'
+        elif len(ds) < 3:
+            mask = '%s%s%s%s %s%s%s%s%s%s'
+        elif len(ds) < 8:
+            mask = '%s%s%s-%s%s%s%s %s%s%s'
+        else:
+            mask = '(%s%s%s) %s%s%s-%s%s%s%s'
+
         num = mask % tuple(ds_str)
-        print(num)
+        num = re.sub(r'\s+$', '', num)
         pn.text = num
 
     def on_digitstring(self, widget, *args):
@@ -90,6 +141,88 @@ class NumberButton(Button):
         dp = self.parent.parent
         dp.digitstring.append(num)
 
+speed_dial_kv_ = """
+<SpeedDial>:
+    id: speeddial
+    PhoneMenu:
+    Label:
+        text: 'speed dial'
+"""
+
+class SpeedDial(Screen):
+    pass
+
+contacts_kv_ = """
+<Contacts>:
+    id: contacts
+    PhoneMenu:
+    Label:
+        text: 'contacts'
+"""
+class Contacts(Screen):
+    pass
+
+settings_kv_ = """
+<Settings>
+    id: settings
+    PhoneMenu:
+    Label:
+        text: 'settings'
+"""
+class Settings(Screen):
+    pass
+
+phone_screen_kv_ = """
+# === Base Screen ==================================       
+<PhoneScreen>:
+    id: 'phone'
+    FloatLayout:
+        Image:
+            source: 'rsc/screens/Menu_Phone.png'
+            allow_stretch: False   
+        HOMEButton:
+            on_release: root.manager.current = 'home' 
+        SETButton:
+# === Base Screen ==================================
+"""
 
 class PhoneScreen(Screen):
-    pass
+    sm = ObjectProperty(None)
+
+    def __init__(self, **kwargs):
+        super(PhoneScreen, self).__init__(**kwargs)
+        self.sm = ScreenManager()
+        self.sm.add_widget(Dialer(name='dialer'))
+        self.sm.add_widget(SpeedDial(name='speeddial'))
+        self.sm.add_widget(Contacts(name='contacts'))
+        self.sm.add_widget(Settings(name='settings'))
+        self.sm.transition = NoTransition()
+        self.add_widget(self.sm)
+
+
+phone_screen_kv = """
+
+# --- Phone Menu -----------------------------------
+<PhoneMenuButton@Button>:
+    text: 'default'
+    
+<PhoneMenu@BoxLayout>:
+    orientation: 'vertical'
+    size_hint: None, None
+    size: 125, 190
+    x: 20
+    y: 210
+    PhoneMenuButton:
+        text: 'Phone'
+        on_release: root.parent.manager.current = 'dialer'
+    PhoneMenuButton:
+        text: 'Speed Dial'
+        on_release: root.parent.manager.current = 'speeddial'
+    PhoneMenuButton:
+        text: 'Contacts'
+        on_release: root.parent.manager.current = 'contacts'
+    PhoneMenuButton:
+        text: 'Settings'
+        on_release: root.parent.manager.current = 'settings'
+
+""" + dialer_screen_kv_ + speed_dial_kv_ + contacts_kv_ + settings_kv_ + phone_screen_kv_

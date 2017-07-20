@@ -102,18 +102,7 @@ Builder.load_string("""
             on_release: root.manager.current = 'climate'
             halign: 'right'
             
-<PhoneScreen>:
-    id: 'phone'
-    FloatLayout:
-        Image:
-            source: 'rsc/screens/Menu_Phone.png'
-            allow_stretch: False   
-        Label:
-            text: 'Phone Screen'
-        HOMEButton:
-            on_release: root.manager.current = 'home' 
-        SETButton:
-        
+
 <NavigationScreen>:
     id: 'nav'
     FloatLayout:
