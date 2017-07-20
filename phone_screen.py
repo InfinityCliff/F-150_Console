@@ -2,21 +2,23 @@ from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
-from kivy.properties import StringProperty, ObjectProperty
+from kivy.properties import StringProperty, ObjectProperty, ListProperty
 
 
 phone_screen_kv = """
 <NumberButton@Button>
     id: btn
     num: '-1'
-    on_release: root.phone_number = root.phone_number + self.num
+    on_release: root.change_number(self.num)
 
 <DialPad>:
+    id: dial_pad
+    phone_number: phonenumber
     orientation: 'vertical'
-    btn: btn
     Label:
-        text: btn.phone_number
+        id: phonenumber
     GridLayout:
+        id: phone_grid
         cols: 3
         NumberButton:
             num: '1'
@@ -56,23 +58,38 @@ phone_screen_kv = """
             text: "#\\n"
 
 <PhoneScreen>:
+    id: phone_screen
     DialPad:
 """
 
-class DialPad(BoxLayout):
-    btn = ObjectProperty(None)
 
+class DialPad(BoxLayout):
+    phone_number = ObjectProperty(None)
+    digitstring = ListProperty([])
+
+    def format_(self):
+        ds = self.digitstring
+        pn = self.phone_number
+        ds_str = ''.join(ds[:])
+
+        mask = '%s' * len(ds)
+        if ds[0] == '1':
+            if len(ds) < 4:
+                ds_str += ' '*(4-len(ds))
+            mask = '%s (' + '%s'*(3  )'
+        num = mask % tuple(ds_str)
+        print(num)
+        pn.text = num
+
+    def on_digitstring(self, widget, *args):
+        self.format_()
 
 class NumberButton(Button):
-    phone_number = StringProperty("")
 
-    def __init__(self, **kwargs):
-        super(NumberButton, self).__init__(**kwargs)
-
-    def on_phone_number(self, widget, *args):
-        print(self.phone_number)
+    def change_number(self, num):
+        dp = self.parent.parent
+        dp.digitstring.append(num)
 
 
 class PhoneScreen(Screen):
-    def __init__(self, **kwargs):
-        super(PhoneScreen, self).__init__(**kwargs)
+    pass
