@@ -6,7 +6,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 
-from kivy.properties import StringProperty, ObjectProperty, ListProperty
+from kivy.properties import StringProperty, ObjectProperty, ListProperty, NumericProperty
 import re
 
 
@@ -142,15 +142,58 @@ class NumberButton(Button):
         dp.digitstring.append(num)
 
 speed_dial_kv_ = """
+<SpeedDialButton@Button>:
+    size_hint: None, None
+    size: 75, 75
 <SpeedDial>:
     id: speeddial
+    
     PhoneMenu:
-    Label:
-        text: 'speed dial'
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint: None, None
+        size: 225, 275
+        x: self.parent.center_x - self.width/2
+        y: 120
+        BoxLayout:
+            SpeedDialButton: 
+                text: 'List'
+                size: 50, 50
+                on_release: speed_contacts.cols = 1
+            SpeedDialButton:
+                text: 'Grid'
+                size: 50, 50
+                on_release: speed_contacts.cols = 3
+        GridLayout:
+            id: speed_contacts
+            cols: 3
+            size_hint: None, None
+            size: 225, 225
+            #x: self.parent.center_x - self.width/2
+            #y: 120
+            canvas:
+                Color:
+                    rgba: [1, 0, 0, 0.5]
+                Line:
+                    points: [self.x+ 75, self.y, self.x + 75, self.y+225]
+                Line:
+                    points: [self.x+ 75*2, self.y, self.x + 75*2, self.y+225]
+                Line:
+                    points: [self.x, self.y+75, self.x+225, self.y+75]
+                Line:
+                    points: [self.x, self.y+75*2, self.x+225, self.y+75*2]
+                Line:
+                    points: [self.x, self.y, self.x+225, self.y, self.x+225, self.y+225, self.x, self.y+225]
+                    close: True
+            SpeedDialButton:
+            SpeedDialButton:
+            SpeedDialButton:
+            SpeedDialButton:
+                    
 """
 
 class SpeedDial(Screen):
-    pass
+    speed_cols = NumericProperty(3)
 
 contacts_kv_ = """
 <Contacts>:
