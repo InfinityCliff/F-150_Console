@@ -7,6 +7,9 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 
 from kivy.properties import StringProperty, ObjectProperty, ListProperty, NumericProperty
+
+from kivy.graphics import InstructionGroup, Color, Rectangle
+
 import re
 
 
@@ -142,12 +145,28 @@ class NumberButton(Button):
         dp.digitstring.append(num)
 
 speed_dial_kv_ = """
+<Grid@InstructionGroup>
+    Clear:
+    Color:
+        rgba: [1, 0, 0, 0.5]
+    Line:
+        points: [self.x+ 75, self.y, self.x + 75, self.y+225]
+    Line:
+        points: [self.x+ 75*2, self.y, self.x + 75*2, self.y+225]
+    Line:
+        points: [self.x, self.y+75, self.x+225, self.y+75]
+    Line:
+        points: [self.x, self.y+75*2, self.x+225, self.y+75*2]
+    Line:
+        points: [self.x, self.y, self.x+225, self.y, self.x+225, self.y+225, self.x, self.y+225]
+        close: True
+        
 <SpeedDialButton@Button>:
     size_hint: None, None
     size: 75, 75
 <SpeedDial>:
     id: speeddial
-    
+    sc: speed_contacts
     PhoneMenu:
     BoxLayout:
         orientation: 'vertical'
@@ -159,11 +178,17 @@ speed_dial_kv_ = """
             SpeedDialButton: 
                 text: 'List'
                 size: 50, 50
-                on_release: speed_contacts.cols = 1
+                on_release: 
+                    speed_contacts.cols = 1
+                    speed_contacts.canvas.remove_group(root.Grid1)
+                    speed_contacts.canvas.add_group(root.Grid2)
             SpeedDialButton:
                 text: 'Grid'
                 size: 50, 50
-                on_release: speed_contacts.cols = 3
+                on_release: 
+                    speed_contacts.cols = 3
+                    speed_contacts.canvas.remove_group(root.Grid2)
+                    speed_contacts.canvas.add_group(root.Grid1)
         GridLayout:
             id: speed_contacts
             cols: 3
@@ -171,20 +196,8 @@ speed_dial_kv_ = """
             size: 225, 225
             #x: self.parent.center_x - self.width/2
             #y: 120
-            canvas:
-                Color:
-                    rgba: [1, 0, 0, 0.5]
-                Line:
-                    points: [self.x+ 75, self.y, self.x + 75, self.y+225]
-                Line:
-                    points: [self.x+ 75*2, self.y, self.x + 75*2, self.y+225]
-                Line:
-                    points: [self.x, self.y+75, self.x+225, self.y+75]
-                Line:
-                    points: [self.x, self.y+75*2, self.x+225, self.y+75*2]
-                Line:
-                    points: [self.x, self.y, self.x+225, self.y, self.x+225, self.y+225, self.x, self.y+225]
-                    close: True
+            #canvas:
+            #    add: Grid
             SpeedDialButton:
             SpeedDialButton:
             SpeedDialButton:
@@ -192,8 +205,21 @@ speed_dial_kv_ = """
                     
 """
 
+
 class SpeedDial(Screen):
     speed_cols = NumericProperty(3)
+    Grid1 = InstructionGroup()
+    Grid2 = InstructionGroup()
+
+    sc = ObjectProperty(None)
+
+    def __init__(self, **kwargs):
+        super(SpeedDial, self).__init__(**kwargs)
+        self.Grid1.add(Color(1,0,0,1))
+        self.Grid1.add(Rectangle(pos=self.pos, size=self.size))
+        self.Grid2.add(Color(0,0,1,1))
+        self.Grid2.add(Rectangle(pos=self.pos, size=self.size))
+        self.sc.canvas.add(self.Grid1)
 
 contacts_kv_ = """
 <Contacts>:
