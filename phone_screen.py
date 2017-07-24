@@ -2,13 +2,18 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.screenmanager import NoTransition
 
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
 
+from kivy.core.window import Window
+from kivy.config import Config
+
+from kivy.uix.widget import Widget
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 
 from kivy.properties import StringProperty, ObjectProperty, ListProperty, NumericProperty
 
-from kivy.graphics import InstructionGroup, Color, Rectangle
+from kivy.graphics import InstructionGroup, Color, Rectangle, Line
 
 import re
 
@@ -16,15 +21,12 @@ import re
 dialer_screen_kv_ = """
     
 # --- Call Menu-------------------------------------
-<CallMenu@BoxLayout>:
-    orientation: 'vertical'
+<CallButton@Button>:
     size_hint: None, None
-    size: 75, 280
-    pos: 165, 120
-    Button:
-        text: 'dial'
-    Button:
-        text: 'hang'
+    size: 150, 100
+    pos: 50, 80
+    text: 'dial'
+
 # ^-- Call Menu -----------------------------------^
 
 # --- Dial Pad -------------------------------------    
@@ -37,61 +39,70 @@ dialer_screen_kv_ = """
 <DialPad>:
     id: dial_pad
     phone_number: phonenumber
-    orientation: 'vertical'
     size_hint: None, None
     size: 280, 280
     x: self.parent.center_x - self.width/2
     y: 120
-    Label:
-        id: phonenumber
-        size_hint_y: None
-        height: 40
-        font_size: 30
-    GridLayout:
-        id: phone_grid
-        cols: 3
-        NumberButton:
-            num: '1'
-            text: "1\\n"
-        NumberButton:
-            num: '2'
-            text: "2\\nABC"
-        NumberButton:
-            num: '3'
-            text: "3\\nDEF"
-        NumberButton:
-            num: '4'
-            text: "4\\nGHI"
-        NumberButton:
-            num: '5'
-            text: "5\\nJKL"
-        NumberButton:
-            num: '6'
-            text: "6\\nMNO"        
-        NumberButton:
-            num: '7'
-            text: "7\\nPQRS"
-        NumberButton:
-            num: '8'
-            text: "8\\nTUV"
-        NumberButton:
-            num: '9'
-            text: "9\\nWXYZ"
-        NumberButton:
-            num: '*'
-            text: "*\\n"
-        NumberButton:
-            num: '0'
-            text: "0\\n+"
-        NumberButton:
-            num: '#'
-            text: "#\\n"
+    Button:
+        size_hint: None, None
+        size: 40,40
+        pos_hint: {'right': 1, 'top': 1}
+        text: '<-'
+        on_press: phonenumber.text = phonenumber.text[:-1]
+    BoxLayout:
+        orientation: 'vertical'
+        size: self.parent.size
+        pos: self.parent.pos
+        Label:
+            id: phonenumber
+            size_hint_y: None
+            height: 40
+            font_size: 30
+        GridLayout:
+            id: phone_grid
+            cols: 3
+            NumberButton:
+                num: '1'
+                text: "1\\n"
+            NumberButton:
+                num: '2'
+                text: "2\\nABC"
+            NumberButton:
+                num: '3'
+                text: "3\\nDEF"
+            NumberButton:
+                num: '4'
+                text: "4\\nGHI"
+            NumberButton:
+                num: '5'
+                text: "5\\nJKL"
+            NumberButton:
+                num: '6'
+                text: "6\\nMNO"        
+            NumberButton:
+                num: '7'
+                text: "7\\nPQRS"
+            NumberButton:
+                num: '8'
+                text: "8\\nTUV"
+            NumberButton:
+                num: '9'
+                text: "9\\nWXYZ"
+            NumberButton:
+                num: '*'
+                text: "*\\n"
+            NumberButton:
+                num: '0'
+                text: "0\\n+"
+            NumberButton:
+                num: '#'
+                text: "#\\n"
 # ^-- Dial Pad ------------------------------------^
 
 <Dialer>:
     id: dialer
     PhoneMenu:
-    CallMenu:
+    CallButton:
     DialPad:
     Button:
         id: contact_photo
@@ -111,7 +122,7 @@ dialer_screen_kv_ = """
 class Dialer(Screen):
     pass
 
-class DialPad(BoxLayout):
+class DialPad(FloatLayout):
     phone_number = ObjectProperty(None)
     digitstring = ListProperty([])
 
@@ -138,32 +149,19 @@ class DialPad(BoxLayout):
     def on_digitstring(self, widget, *args):
         self.format_()
 
+
 class NumberButton(Button):
 
     def change_number(self, num):
-        dp = self.parent.parent
+        dp = self.parent.parent.parent
         dp.digitstring.append(num)
 
 speed_dial_kv_ = """
-<Grid@InstructionGroup>
-    Clear:
-    Color:
-        rgba: [1, 0, 0, 0.5]
-    Line:
-        points: [self.x+ 75, self.y, self.x + 75, self.y+225]
-    Line:
-        points: [self.x+ 75*2, self.y, self.x + 75*2, self.y+225]
-    Line:
-        points: [self.x, self.y+75, self.x+225, self.y+75]
-    Line:
-        points: [self.x, self.y+75*2, self.x+225, self.y+75*2]
-    Line:
-        points: [self.x, self.y, self.x+225, self.y, self.x+225, self.y+225, self.x, self.y+225]
-        close: True
-        
+
+<SpeedDialMenuButton@Button>:
+
 <SpeedDialButton@Button>:
-    size_hint: None, None
-    size: 75, 75
+
 <SpeedDial>:
     id: speeddial
     sc: speed_contacts
@@ -175,61 +173,171 @@ speed_dial_kv_ = """
         x: self.parent.center_x - self.width/2
         y: 120
         BoxLayout:
-            SpeedDialButton: 
+            size_hint: None, 0.25
+            pos_hint: {'top': 1}
+            SpeedDialMenuButton: 
                 text: 'List'
-                size: 50, 50
                 on_release: 
                     speed_contacts.cols = 1
-                    speed_contacts.canvas.remove_group(root.Grid1)
-                    speed_contacts.canvas.add_group(root.Grid2)
-            SpeedDialButton:
+                    #speed_contacts.canvas.clear()
+                    #speed_contacts.canvas.add(root.Grid1)
+            SpeedDialMenuButton:
                 text: 'Grid'
-                size: 50, 50
                 on_release: 
                     speed_contacts.cols = 3
-                    speed_contacts.canvas.remove_group(root.Grid2)
-                    speed_contacts.canvas.add_group(root.Grid1)
-        GridLayout:
-            id: speed_contacts
-            cols: 3
-            size_hint: None, None
-            size: 225, 225
-            #x: self.parent.center_x - self.width/2
-            #y: 120
-            #canvas:
-            #    add: Grid
-            SpeedDialButton:
-            SpeedDialButton:
-            SpeedDialButton:
-            SpeedDialButton:
-                    
+                    #speed_contacts.canvas.clear()
+                    #speed_contacts.canvas.add(root.Grid2)
+        ScrollView:
+            viewport_size: 225, 225
+            GridLayout:
+                id: speed_contacts
+                cols: 3
+                row_default_height: 75
+                row_force_default: True
+                size_hint: None, None
+                size: 225, 225
+                SpeedDialButton:
+                SpeedDialButton:
+                SpeedDialButton:
+                SpeedDialButton:
+                        
 """
+
+
+class Grid1(InstructionGroup):
+
+    def __init__(self, x, y, **kwargs):
+        super(Grid1, self).__init__(**kwargs)
+        self.x = x
+        self.y = y
 
 
 class SpeedDial(Screen):
     speed_cols = NumericProperty(3)
-    Grid1 = InstructionGroup()
-    Grid2 = InstructionGroup()
-
     sc = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super(SpeedDial, self).__init__(**kwargs)
-        self.Grid1.add(Color(1,0,0,1))
-        self.Grid1.add(Rectangle(pos=self.pos, size=self.size))
-        self.Grid2.add(Color(0,0,1,1))
-        self.Grid2.add(Rectangle(pos=self.pos, size=self.size))
-        self.sc.canvas.add(self.Grid1)
+        print(self.x)
+
+        self.Grid1 = InstructionGroup()
+        self.Grid1.add(Color(1, 0, 0, 0.5))
+        self.Grid1.add(Line(points=[self.x, self.y +75, self.x +225, self.y +75]))
+        self.Grid1.add(Line(points=[self.x, self.y +75*2, self.x +225, self.y +75*2]))
+        self.Grid1.add(Line(points=[self.x, self.y, self.x+225, self.y, self.x+225, self.y+225, self.x, self.y+225]))
+
+        self.Grid2 = InstructionGroup()
+        self.Grid2.add(Color(1, 0, 0, 0.5))
+        self.Grid2.add(Rectangle(pos=(self.x, self.y)))
+        self.Grid2.add(Line(points=[self.x + 75, self.y, self.x + 75, self.y+225]))
+        self.Grid2.add(Line(points=[self.x + 75*2, self.y, self.x + 75*2, self.y+225]))
+        self.Grid2.add(Line(points=[self.x, self.y + 75, self.x+225, self.y + 75]))
+        self.Grid2.add(Line(points=[self.x, self.y + 75*2, self.x + 225, self.y + 75*2]))
+        self.Grid2.add(Line(points=[self.x, self.y, self.x + 225, self.y, self.x + 225, self.y + 225, self.x, self.y + 225], close=True))
+
+
+        #self.sc.canvas.add(self.Grid2)
 
 contacts_kv_ = """
+#:import vkb kivy.uix.vkeyboard.VKeyboard
+
+
 <Contacts>:
     id: contacts
     PhoneMenu:
-    Label:
-        text: 'contacts'
+    BoxLayout:
+        id: contact_base
+        orientation: 'vertical'
+        size: 635, 340
+        pos: 165, 70
+        BoxLayout:
+            size_hint: None, None
+            #pos_hint: None, None
+            size: 635, 340
+            pos: 165, 70
+            orientation: 'vertical'
+            BoxLayout:
+                size_hint: 1, None
+                height: 40
+                Button:
+                    text: 'Groups'
+                    size_hint: None, 1
+                TextInput:
+                    text: 'Search'
+                    size_hint: 0.75, 1
+                    halign: 'center'
+                    on_focus:
+                        self.text = '' if self.focus else 'Search'
+            ScrollView:
+                BoxLayout:
+                    orientation: 'vertical'
+                    Button:
+                    Button:
+                    Button:
+                    Button:
+                    Button:
+                    Button:
+                    Button:
+                    Button:
+                    Button:
+                
+            
 """
+
+
+class MyKeyboardListener(Widget):
+
+    def __init__(self, **kwargs):
+        super(MyKeyboardListener, self).__init__(**kwargs)
+        self._keyboard = Window.request_keyboard(
+            self._keyboard_closed, self, 'text')
+        if self._keyboard.widget:
+            # If it exists, this widget is a VKeyboard object which you can use
+            # to change the keyboard layout.
+            pass
+        self._keyboard.bind(on_key_down=self._on_keyboard_down)
+
+    def _keyboard_closed(self):
+        print('My keyboard have been closed!')
+        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
+        self._keyboard = None
+
+    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
+        print('The key', keycode, 'have been pressed')
+        print(' - text is %r' % text)
+        print(' - modifiers are %r' % modifiers)
+
+        # Keycode is composed of an integer + a string
+        # If we hit escape, release the keyboard
+        if keycode[1] == 'escape':
+            keyboard.release()
+
+        # Return True to accept the key. Otherwise, it will be used by
+        # the system.
+        return True
+
+
 class Contacts(Screen):
-    pass
+    #_keyboard = ObjectProperty(None)
+
+    def __init__(self, **kwargs):
+        super(Contacts, self).__init__(**kwargs)
+        #self.keyboard = MyKeyboardListener()
+        Config.get('kivy', 'keyboard_mode'),
+        Config.get('kivy', 'keyboard_layout')
+
+    #def add_keyboard(self):
+    ##    print('open keyboard')
+     #   self._keyboard = Window.request_keyboard(
+     ##       self._keyboard_close, self)
+      #  self.add_widget(self._keyboard)
+        #if self._keyboard.widget:
+        #    vkeyboard = self._keyboard.widget
+
+    #def _keyboard_close(self, *args):
+    #    if self.keyboard:
+    #        self.keyboard = None
+
 
 settings_kv_ = """
 <Settings>
