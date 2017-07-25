@@ -2,27 +2,31 @@ from kivy.config import Config
 Config.set('graphics', 'resizable', '0') #0 being off 1 being on as in true/false
 Config.set('graphics', 'width', '800')
 Config.set('graphics', 'height', '480')
+
+from kivy.app import App
+from kivy.lang import Builder
+
 from kivy.graphics.vertex_instructions import (Rectangle, Ellipse, Line)
 from kivy.graphics import Color
-from kivy.app import App
+from kivy.graphics.texture import Texture
+
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.screenmanager import NoTransition
+
 from kivy.properties import ListProperty, NumericProperty, StringProperty
+
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.image import Image
+
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
-
-from kivy.lang import Builder
-from kivy.graphics.texture import Texture
-
 
 from climate_screen import climate_screen_kv, ClimateScreen
 from music_screen import music_screen_kv, MusicScreen
 from phone_screen import phone_screen_kv, PhoneScreen
 from front_glass import front_glass_kv, FrontGlass
-
+from Common import common_kv
 
 Builder.load_string("""
 #:import partial functools
@@ -113,9 +117,10 @@ Builder.load_string("""
             text: 'Navigation Screen'
         HOMEButton:
             on_release: root.manager.current = 'home' 
-            
 
-""" + climate_screen_kv + music_screen_kv + phone_screen_kv + front_glass_kv)
+     
+
+""" + climate_screen_kv + music_screen_kv + phone_screen_kv + front_glass_kv + common_kv)
 
 
 class CTLButton(Button):
@@ -130,6 +135,8 @@ class CTLButton(Button):
         texture.blit_buffer(buf, colorfmt='rgb', bufferfmt='ubyte')
         with self.canvas:
             Rectangle(texture=texture, pos=self.pos, size=(64, 64))
+
+
 
 
 class HomeScreen(Screen):
