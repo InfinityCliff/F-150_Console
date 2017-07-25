@@ -1,0 +1,21 @@
+SideMenu:
+    id: sidemenu
+    size_hint: None, 1
+    width: 150
+    pos_hint: {'x': 0}
+    x: 0
+    halign: 'center'
+    Button_Content: button_content
+    BoxLayout:
+        id: bl
+        BoxLayout:
+            id: button_content
+            pos_hint: {'center_y': 0.5}
+            size_hint_y: None
+            height: 90
+            size_hint_x: None
+            width: 100
+        Button:
+            text: '<<'
+            on_press:
+                sidemenu.dismiss()

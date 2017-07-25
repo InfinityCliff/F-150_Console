@@ -13,7 +13,7 @@ from kivy.uix.popup import Popup
 
 from kivy.properties import ObjectProperty
 
-from Common import SideMenu
+from common import SideMenu, common_kv
 
 ipod_screen_kv = """
 <iPod>:
@@ -83,6 +83,7 @@ class Music_Screen_Side_Menu(BoxLayout):
 class MusicScreen(Screen):
     sm = ObjectProperty(None)
     side_menu_content = ObjectProperty(None)
+    Button_Content = ObjectProperty()
 
     def __init__(self, **kwargs):
         super(MusicScreen, self).__init__(**kwargs)
@@ -93,11 +94,11 @@ class MusicScreen(Screen):
         self.sm.transition = NoTransition()
         self.add_widget(self.sm)
         self.menu_button = Music_Screen_Menu_Button()
-        self.sidemenu = SideMenu()
+        self.sidemenu = SideMenu(Music_Screen_Side_Menu())
 
     def open_side_menu(self):
         self.sidemenu.open()
-        self.sidemenu.add_content_(Music_Screen_Side_Menu())
+        #self.sidemenu.add_content_(Music_Screen_Side_Menu())
 
 
     def send_CANBUS(self, code):
@@ -129,4 +130,4 @@ music_screen_kv = """
         SETButton:
         
 # === Base Screen ==================================
-""" + music_menu_screen_kv + aux_screen_kv + radio_screen_kv + ipod_screen_kv
+"""  + aux_screen_kv + radio_screen_kv + ipod_screen_kv + music_menu_screen_kv + common_kv

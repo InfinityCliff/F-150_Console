@@ -26,7 +26,7 @@ from climate_screen import climate_screen_kv, ClimateScreen
 from music_screen import music_screen_kv, MusicScreen
 from phone_screen import phone_screen_kv, PhoneScreen
 from front_glass import front_glass_kv, FrontGlass
-from Common import common_kv
+from common import common_kv
 
 Builder.load_string("""
 #:import partial functools
@@ -120,7 +120,7 @@ Builder.load_string("""
 
      
 
-""" + climate_screen_kv + music_screen_kv + phone_screen_kv + front_glass_kv + common_kv)
+""" + climate_screen_kv + music_screen_kv + phone_screen_kv + front_glass_kv)
 
 
 class CTLButton(Button):
