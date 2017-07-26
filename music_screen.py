@@ -13,11 +13,11 @@ from kivy.uix.popup import Popup
 
 from kivy.properties import ObjectProperty
 
-from common import SideMenu, common_kv
+from side_menu import SideMenu, common_kv
 
 ipod_screen_kv = """
 <iPod>:
-    Music_Screen_Menu_Button:
+
 """
 
 
@@ -26,7 +26,7 @@ class iPod(Screen):
 
 radio_screen_kv = """
 <Radio>:
-    Music_Screen_Menu_Button:
+
 """
 
 
@@ -36,7 +36,7 @@ class Radio(Screen):
 
 aux_screen_kv = """
 <Aux>:
-    Music_Screen_Menu_Button:
+
 """
 
 
@@ -44,12 +44,7 @@ class Aux(Screen):
     pass
 
 
-music_menu_screen_kv = """
-#<Music_Menu_Button@Button>:
-#    size_hint: 1, None
-#    height: 30
-#    #pos_hint: 
-    
+music_menu_screen_kv = """ 
 <Music_Screen_Side_Menu>:    
     id: music_side_menu
     orientation: 'vertical'
@@ -69,12 +64,7 @@ music_menu_screen_kv = """
         on_press: 
             #sidemenu.current_screen.manager.current = 'aux'
             #sidemenu.dismiss()                            
-
 """
-
-class Music_Screen_Menu_Button(Button):
-    pass
-
 
 class Music_Screen_Side_Menu(BoxLayout):
     pass
@@ -83,7 +73,6 @@ class Music_Screen_Side_Menu(BoxLayout):
 class MusicScreen(Screen):
     sm = ObjectProperty(None)
     side_menu_content = ObjectProperty(None)
-    Button_Content = ObjectProperty()
 
     def __init__(self, **kwargs):
         super(MusicScreen, self).__init__(**kwargs)
@@ -93,8 +82,8 @@ class MusicScreen(Screen):
         self.sm.add_widget(Aux(name='aux'))
         self.sm.transition = NoTransition()
         self.add_widget(self.sm)
-        self.menu_button = Music_Screen_Menu_Button()
-        self.sidemenu = SideMenu(Music_Screen_Side_Menu())
+        self.sidemenu = SideMenu()
+        self.sidemenu.add_content_(Music_Screen_Side_Menu())
 
     def open_side_menu(self):
         self.sidemenu.open()
@@ -106,21 +95,14 @@ class MusicScreen(Screen):
         # TODO controller to tx on CAN-BUS
         canbus.send(code)
 
-music_screen_kv = """
 
-    
-<Music_Screen_Menu_Button>:
-    size_hint: None, None
-    size: 30, 30
-    pos: 20, 380
-    text: 'menu'
-    on_press: self.parent.parent.parent.open_side_menu()
-        
+
+music_screen_kv = """
         
 # === Base Screen ==================================     
 <MusicScreen>:
     id: music
-    #side_menu_content: music_side_menu
+    on_leave: app.frontglass.remove_SideMenuButton()
     FloatLayout:
         Image:
             source: 'rsc/screens/Music.png'
@@ -130,4 +112,6 @@ music_screen_kv = """
         SETButton:
         
 # === Base Screen ==================================
-"""  + aux_screen_kv + radio_screen_kv + ipod_screen_kv + music_menu_screen_kv + common_kv
+    
+""" + aux_screen_kv + radio_screen_kv + ipod_screen_kv + music_menu_screen_kv + common_kv
+

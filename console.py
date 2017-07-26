@@ -13,7 +13,7 @@ from kivy.graphics.texture import Texture
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.screenmanager import NoTransition
 
-from kivy.properties import ListProperty, NumericProperty, StringProperty
+from kivy.properties import ListProperty, NumericProperty, StringProperty, ObjectProperty
 
 from kivy.uix.button import Button
 from kivy.uix.label import Label
@@ -26,11 +26,12 @@ from climate_screen import climate_screen_kv, ClimateScreen
 from music_screen import music_screen_kv, MusicScreen
 from phone_screen import phone_screen_kv, PhoneScreen
 from front_glass import front_glass_kv, FrontGlass
-from common import common_kv
+
+from side_menu import SideMenu
 
 Builder.load_string("""
 #:import partial functools
-
+#:import SideMenuButton front_glass
 <Logo>:
     source: 'rsc/logo/InfinityCliffLogoClear-Red.png'
     size_hint: None, None
@@ -80,6 +81,7 @@ Builder.load_string("""
 <HomeScreen>:
     id: 'home'
     size: 800, 480
+    on_leave: app.frontglass.add_SideMenuButton()
     FloatLayout:
         size: 800, 480
         Image:
@@ -109,6 +111,7 @@ Builder.load_string("""
 
 <NavigationScreen>:
     id: 'nav'
+    on_leave: app.frontglass.remove_SideMenuButton()
     FloatLayout:
         Image:
             source: 'rsc/screens/Menu_Nav.png'
@@ -123,20 +126,8 @@ Builder.load_string("""
 """ + climate_screen_kv + music_screen_kv + phone_screen_kv + front_glass_kv)
 
 
-class CTLButton(Button):
-    def __init__(self, **kwargs):
-        super(CTLButton, self).__init__(**kwargs)
-        texture = Texture.create(size=(64, 64))
-
-        size = 64*64*3
-        buf = [int(x*255/size) for x in range(size)]
-        buf = b''.join(map(chr, buf))
-
-        texture.blit_buffer(buf, colorfmt='rgb', bufferfmt='ubyte')
-        with self.canvas:
-            Rectangle(texture=texture, pos=self.pos, size=(64, 64))
-
-
+class NavigationScreen(Screen):
+    sidemenu = ObjectProperty(SideMenu)
 
 
 class HomeScreen(Screen):
@@ -144,10 +135,6 @@ class HomeScreen(Screen):
 
 
 class HOMEButton(Button):
-    pass
-
-
-class NavigationScreen(Screen):
     pass
 
 
@@ -161,6 +148,7 @@ class Console(FloatLayout):
 
 # Create the screen manager
 sm = ScreenManager()
+sm.id = 'scrman'
 sm.add_widget(HomeScreen(name='home'))
 sm.add_widget(PhoneScreen(name='phone'))
 sm.add_widget(NavigationScreen(name='nav'))
@@ -174,10 +162,14 @@ sm.index = -1
 class ConsoleApp(App):
     carputer = None
     init_state = {}
+    scrman = ObjectProperty(sm)
+    scrcur = ObjectProperty(sm.current)
+    frontglass = ObjectProperty()
 
     def build(self):
         self.root = Console()
-        self.root.add_widget(FrontGlass(), index=0)
+        self.frontglass = FrontGlass()
+        self.root.add_widget(self.frontglass, index=0)
         self.root.add_widget(sm, index=1)
         return self.root
 
@@ -189,5 +181,7 @@ class ConsoleApp(App):
         climate.startup(init_state['climate'])
         self.init_state = init_state
 
+    def on_enter(self):
+        print('sadfsd')
 if __name__ == '__main__':
     ConsoleApp().run()

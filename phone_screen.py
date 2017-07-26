@@ -17,6 +17,7 @@ from kivy.graphics import InstructionGroup, Color, Rectangle, Line
 
 import re
 
+from side_menu import SideMenu
 
 dialer_screen_kv_ = """
     
@@ -119,8 +120,10 @@ dialer_screen_kv_ = """
         text: 'default'
 """
 
+
 class Dialer(Screen):
     pass
+
 
 class DialPad(FloatLayout):
     phone_number = ObjectProperty(None)
@@ -199,8 +202,7 @@ speed_dial_kv_ = """
                 SpeedDialButton:
                 SpeedDialButton:
                 SpeedDialButton:
-                SpeedDialButton:
-                        
+                SpeedDialButton:       
 """
 
 
@@ -241,7 +243,6 @@ class SpeedDial(Screen):
 contacts_kv_ = """
 #:import vkb kivy.uix.vkeyboard.VKeyboard
 
-
 <Contacts>:
     id: contacts
     PhoneMenu:
@@ -279,65 +280,16 @@ contacts_kv_ = """
                     Button:
                     Button:
                     Button:
-                    Button:
-                
-            
+                    Button: 
 """
 
 
-class MyKeyboardListener(Widget):
-
-    def __init__(self, **kwargs):
-        super(MyKeyboardListener, self).__init__(**kwargs)
-        self._keyboard = Window.request_keyboard(
-            self._keyboard_closed, self, 'text')
-        if self._keyboard.widget:
-            # If it exists, this widget is a VKeyboard object which you can use
-            # to change the keyboard layout.
-            pass
-        self._keyboard.bind(on_key_down=self._on_keyboard_down)
-
-    def _keyboard_closed(self):
-        print('My keyboard have been closed!')
-        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
-        self._keyboard = None
-
-    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        print('The key', keycode, 'have been pressed')
-        print(' - text is %r' % text)
-        print(' - modifiers are %r' % modifiers)
-
-        # Keycode is composed of an integer + a string
-        # If we hit escape, release the keyboard
-        if keycode[1] == 'escape':
-            keyboard.release()
-
-        # Return True to accept the key. Otherwise, it will be used by
-        # the system.
-        return True
-
-
 class Contacts(Screen):
-    #_keyboard = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super(Contacts, self).__init__(**kwargs)
-        #self.keyboard = MyKeyboardListener()
         Config.get('kivy', 'keyboard_mode'),
         Config.get('kivy', 'keyboard_layout')
-
-    #def add_keyboard(self):
-    ##    print('open keyboard')
-     #   self._keyboard = Window.request_keyboard(
-     ##       self._keyboard_close, self)
-      #  self.add_widget(self._keyboard)
-        #if self._keyboard.widget:
-        #    vkeyboard = self._keyboard.widget
-
-    #def _keyboard_close(self, *args):
-    #    if self.keyboard:
-    #        self.keyboard = None
-
 
 settings_kv_ = """
 <Settings>
@@ -346,6 +298,8 @@ settings_kv_ = """
     Label:
         text: 'settings'
 """
+
+
 class Settings(Screen):
     pass
 
@@ -353,6 +307,7 @@ phone_screen_kv_ = """
 # === Base Screen ==================================       
 <PhoneScreen>:
     id: 'phone'
+    on_leave: app.frontglass.remove_SideMenuButton()
     FloatLayout:
         Image:
             source: 'rsc/screens/Menu_Phone.png'
@@ -362,6 +317,7 @@ phone_screen_kv_ = """
         SETButton:
 # === Base Screen ==================================
 """
+
 
 class PhoneScreen(Screen):
     sm = ObjectProperty(None)
@@ -375,6 +331,7 @@ class PhoneScreen(Screen):
         self.sm.add_widget(Settings(name='settings'))
         self.sm.transition = NoTransition()
         self.add_widget(self.sm)
+        self.sidemenu = SideMenu()
 
 
 phone_screen_kv = """

@@ -4,6 +4,8 @@ from kivy.properties import ListProperty, NumericProperty, StringProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.graphics.vertex_instructions import (Rectangle, Ellipse, Line)
 
+from side_menu import SideMenu
+
 climate_screen_kv = """
 #
 # CLIMATE CONTROL SCREEN
@@ -99,11 +101,12 @@ climate_screen_kv = """
         button_image_down: 'rsc/buttons/red_plus_active.png'
         on_release: root.increase()      
 
-                       
 <CCButtonPreset@CCButton>        
     size: 210, 48
+
 <ClimateScreen>:
     id: 'climate'
+    on_leave: app.frontglass.remove_SideMenuButton()
     FloatLayout:
         Image:
             source: 'rsc/screens/Climate.png'
@@ -222,6 +225,7 @@ class StepSlider(BoxLayout):
 class ClimateScreen(Screen):
     def __init__(self, **kwargs):
         super(ClimateScreen, self).__init__(**kwargs)
+        self.sidemenu = SideMenu()
 
     def startup(self, init_state):
         vent_buttons = {1: self.ids.vent_face,

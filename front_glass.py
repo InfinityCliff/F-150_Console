@@ -2,6 +2,10 @@ from kivy.uix.modalview import ModalView
 from kivy.clock import Clock
 from functools import partial
 from kivy.uix.label import Label
+from kivy.uix.floatlayout import FloatLayout
+
+from side_menu import SideMenuButton
+
 
 class QuitMenu(ModalView):
     pass
@@ -11,9 +15,8 @@ front_glass_kv = """
 <FrontGlass>:
     id: frontglass
     FloatLayout:
-        id: frontglasslayout           
-            
-        
+        id: frontglasslayout
+
 <QuitMenu>:
     id: quit_menu
     #background: 'rsc/logo/InfinityCliffLogoClear-Red.png'
@@ -55,18 +58,30 @@ front_glass_kv = """
 """
 
 
-class FrontGlass(Label):
+class FrontGlass(FloatLayout):
     def __init__(self, **kwargs):
         super(FrontGlass, self).__init__(**kwargs)
         self.bind(
             on_touch_down=self.create_clock,
             on_touch_up=self.delete_clock)
         self.quit_menu = QuitMenu()
+        self.side_menu_button = SideMenuButton()
+        self.touch = None
 
     def create_clock(self, widget, touch, *args):
-        callback = partial(self.quit_menu.open, touch)
+        self.touch = touch
+        callback = partial(self.quit_menu.open, self.touch)
         Clock.schedule_once(callback, 2)
-        touch.ud['event'] = callback
+        self.touch.ud['event'] = callback
 
     def delete_clock(self, widget, touch, *args):
-        Clock.unschedule(touch.ud['event'])
+        if self.touch:
+            Clock.unschedule(touch.ud['event'])
+            self.touch = None
+
+    def add_SideMenuButton(self):
+
+        self.add_widget(self.side_menu_button)
+
+    def remove_SideMenuButton(self):
+        self.remove_widget(self.side_menu_button)
