@@ -2,7 +2,7 @@ import canbus
 from kivy.uix.screenmanager import Screen
 from kivy.properties import ListProperty, NumericProperty, StringProperty
 from kivy.uix.boxlayout import BoxLayout
-from kivy.graphics.vertex_instructions import (Rectangle, Ellipse, Line)
+from kivy.graphics.vertex_instructions import (Line)
 
 from side_menu import SideMenu
 
@@ -56,8 +56,10 @@ climate_screen_kv = """
         if self.lights == 3: self.lights = 0
     on_release:
         self.active = True if self.lights > 0 else False 
-        self.background_radio_down = 'rsc/buttons/green_double_circle_vert_1_on.png' if self.lights == 1 else self._radio_image
-        self.background_radio_down = 'rsc/buttons/green_double_circle_vert_2_on.png' if self.lights == 2 else self._radio_image
+        self.background_radio_down = 'rsc/buttons/green_double_circle_vert_1_on.png' if self.lights == 1 \
+                                     else self._radio_image
+        self.background_radio_down = 'rsc/buttons/green_double_circle_vert_2_on.png' if self.lights == 2 \
+                                     else self._radio_image
     canvas:
         Clear
         Rectangle:
@@ -106,7 +108,7 @@ climate_screen_kv = """
 
 <ClimateScreen>:
     id: 'climate'
-    on_leave: app.frontglass.remove_SideMenuButton()
+    on_leave: app.frontglass.remove_side_menu_button()
     FloatLayout:
         Image:
             source: 'rsc/screens/Climate.png'
@@ -181,10 +183,10 @@ canbus.code_table = {'temp_up': 0, 'temp_down': 1,
 
 
 class StepSlider(BoxLayout):
-    values = ListProperty(None)
+    values = ListProperty()
     step = NumericProperty(0)
     value = StringProperty('')
-    mode = StringProperty('text') # or 'bar'
+    mode = StringProperty('text')  # or 'bar'
 
     def __init__(self, **kwargs):
         super(StepSlider, self).__init__(**kwargs)
@@ -223,9 +225,11 @@ class StepSlider(BoxLayout):
 
 
 class ClimateScreen(Screen):
+
+
     def __init__(self, **kwargs):
         super(ClimateScreen, self).__init__(**kwargs)
-        self.sidemenu = SideMenu()
+        self.sidemenu = SideMenu(None)
 
     def startup(self, init_state):
         vent_buttons = {1: self.ids.vent_face,
@@ -240,7 +244,8 @@ class ClimateScreen(Screen):
         self.ids.fan_control.step = init_state['fan_stop']
         self.ids.fan_control.drawbar()
 
-    def send_CANBUS(self, code):
-        # TODO will translate buttun presses to appropriate can-bus codes and send
+    @staticmethod
+    def send_canbus(code):
+        # TODO will translate button presses to appropriate can-bus codes and send
         # TODO controller to tx on CAN-BUS
         canbus.send(code)

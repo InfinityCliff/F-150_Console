@@ -23,6 +23,7 @@ class Carputer(object):
 
 
 if __name__ == '__main__':
+
     _carputer = Carputer()
 
     _console = console.ConsoleApp()

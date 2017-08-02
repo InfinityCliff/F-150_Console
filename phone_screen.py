@@ -1,17 +1,17 @@
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.screenmanager import NoTransition
 
-from kivy.uix.boxlayout import BoxLayout
+# from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 
-from kivy.core.window import Window
+# from kivy.core.window import Window
 from kivy.config import Config
 
-from kivy.uix.widget import Widget
-from kivy.uix.label import Label
+# from kivy.uix.widget import Widget
+# from kivy.uix.label import Label
 from kivy.uix.button import Button
 
-from kivy.properties import StringProperty, ObjectProperty, ListProperty, NumericProperty
+from kivy.properties import ObjectProperty, ListProperty, NumericProperty
 
 from kivy.graphics import InstructionGroup, Color, Rectangle, Line
 
@@ -127,7 +127,7 @@ class Dialer(Screen):
 
 class DialPad(FloatLayout):
     phone_number = ObjectProperty(None)
-    digitstring = ListProperty([])
+    digitstring = ListProperty()
 
     def format_(self):
         ds = self.digitstring
@@ -220,12 +220,11 @@ class SpeedDial(Screen):
 
     def __init__(self, **kwargs):
         super(SpeedDial, self).__init__(**kwargs)
-        print(self.x)
 
         self.Grid1 = InstructionGroup()
         self.Grid1.add(Color(1, 0, 0, 0.5))
-        self.Grid1.add(Line(points=[self.x, self.y +75, self.x +225, self.y +75]))
-        self.Grid1.add(Line(points=[self.x, self.y +75*2, self.x +225, self.y +75*2]))
+        self.Grid1.add(Line(points=[self.x, self.y + 75, self.x + 225, self.y + 75]))
+        self.Grid1.add(Line(points=[self.x, self.y + 75*2, self.x + 225, self.y + 75*2]))
         self.Grid1.add(Line(points=[self.x, self.y, self.x+225, self.y, self.x+225, self.y+225, self.x, self.y+225]))
 
         self.Grid2 = InstructionGroup()
@@ -235,10 +234,10 @@ class SpeedDial(Screen):
         self.Grid2.add(Line(points=[self.x + 75*2, self.y, self.x + 75*2, self.y+225]))
         self.Grid2.add(Line(points=[self.x, self.y + 75, self.x+225, self.y + 75]))
         self.Grid2.add(Line(points=[self.x, self.y + 75*2, self.x + 225, self.y + 75*2]))
-        self.Grid2.add(Line(points=[self.x, self.y, self.x + 225, self.y, self.x + 225, self.y + 225, self.x, self.y + 225], close=True))
+        self.Grid2.add(Line(points=[self.x, self.y, self.x + 225, self.y, self.x + 225, self.y + 225, self.x,
+                                    self.y + 225], close=True))
 
-
-        #self.sc.canvas.add(self.Grid2)
+        # self.sc.canvas.add(self.Grid2)
 
 contacts_kv_ = """
 #:import vkb kivy.uix.vkeyboard.VKeyboard
@@ -303,36 +302,20 @@ settings_kv_ = """
 class Settings(Screen):
     pass
 
-phone_screen_kv_ = """
-# === Base Screen ==================================       
-<PhoneScreen>:
-    id: 'phone'
-    on_leave: app.frontglass.remove_SideMenuButton()
-    FloatLayout:
-        Image:
-            source: 'rsc/screens/Menu_Phone.png'
-            allow_stretch: False   
-        HOMEButton:
-            on_release: root.manager.current = 'home' 
-        SETButton:
-# === Base Screen ==================================
-"""
-
 
 class PhoneScreen(Screen):
-    sm = ObjectProperty(None)
+    sm = ObjectProperty(ScreenManager())
 
     def __init__(self, **kwargs):
         super(PhoneScreen, self).__init__(**kwargs)
-        self.sm = ScreenManager()
+        #self.sm = ScreenManager()
         self.sm.add_widget(Dialer(name='dialer'))
         self.sm.add_widget(SpeedDial(name='speeddial'))
         self.sm.add_widget(Contacts(name='contacts'))
         self.sm.add_widget(Settings(name='settings'))
         self.sm.transition = NoTransition()
         self.add_widget(self.sm)
-        self.sidemenu = SideMenu()
-
+        self.sidemenu = SideMenu(self.sm)
 
 phone_screen_kv = """
 
@@ -359,4 +342,17 @@ phone_screen_kv = """
         text: 'Settings'
         on_release: root.parent.manager.current = 'settings'
 
-""" + dialer_screen_kv_ + speed_dial_kv_ + contacts_kv_ + settings_kv_ + phone_screen_kv_
+# === Base Screen ==================================       
+<PhoneScreen>:
+    id: 'phone'
+    on_leave: app.frontglass.remove_SideMenuButton()
+    FloatLayout:
+        Image:
+            source: 'rsc/screens/Menu_Phone.png'
+            allow_stretch: False   
+        HOMEButton:
+            on_release: root.manager.current = 'home' 
+        SETButton:
+# === Base Screen ==================================
+
+""" + dialer_screen_kv_ + speed_dial_kv_ + contacts_kv_ + settings_kv_

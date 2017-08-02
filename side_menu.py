@@ -1,7 +1,7 @@
 from kivy.uix.popup import Popup
 
 from kivy.properties import ObjectProperty
-from kivy.uix.boxlayout import BoxLayout
+# from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 
 
@@ -19,7 +19,7 @@ common_kv = """
     background_color: [.5,.5,.5,.4]
     on_press: self.background_color = [.5,.5,.8,.6]
     on_release: 
-        app.scrman.current_screen.sidemenu.open()
+        app.sm.current_screen.sidemenu.open()
         self.background_color = [.5,.5,.5,.4]
     
 <SideMenu>:
@@ -49,13 +49,14 @@ common_kv = """
 class SideMenu(Popup):
     button_content = ObjectProperty()
 
-    def __init__(self, **kwargs):
+    def __init__(self, screen_manager, **kwargs):
         super(SideMenu, self).__init__(**kwargs)
+        self.sm = screen_manager
 
     def add_content_(self, widget):
-        self.button_content.clear_widgets()
-        self.button_content.add_widget(widget)
+        pass
+        #self.button_content.clear_widgets()
+        #self.button_content.add_widget(widget)
 
-
-
-
+    def change_screen(self, screen_name):
+        self.sm.current = screen_name

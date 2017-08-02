@@ -6,9 +6,9 @@ Config.set('graphics', 'height', '480')
 from kivy.app import App
 from kivy.lang import Builder
 
-from kivy.graphics.vertex_instructions import (Rectangle, Ellipse, Line)
-from kivy.graphics import Color
-from kivy.graphics.texture import Texture
+# from kivy.graphics.vertex_instructions import (Rectangle, Ellipse, Line)
+# from kivy.graphics import Color
+# from kivy.graphics.texture import Texture
 
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.screenmanager import NoTransition
@@ -16,10 +16,10 @@ from kivy.uix.screenmanager import NoTransition
 from kivy.properties import ListProperty, NumericProperty, StringProperty, ObjectProperty
 
 from kivy.uix.button import Button
-from kivy.uix.label import Label
-from kivy.uix.image import Image
+# from kivy.uix.label import Label
+# from kivy.uix.image import Image
 
-from kivy.uix.boxlayout import BoxLayout
+# from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 
 from climate_screen import climate_screen_kv, ClimateScreen
@@ -28,6 +28,7 @@ from phone_screen import phone_screen_kv, PhoneScreen
 from front_glass import front_glass_kv, FrontGlass
 
 from side_menu import SideMenu
+
 
 Builder.load_string("""
 #:import partial functools
@@ -81,7 +82,7 @@ Builder.load_string("""
 <HomeScreen>:
     id: 'home'
     size: 800, 480
-    on_leave: app.frontglass.add_SideMenuButton()
+    on_leave: app.frontglass.add_side_menu_button()
     FloatLayout:
         size: 800, 480
         Image:
@@ -111,7 +112,7 @@ Builder.load_string("""
 
 <NavigationScreen>:
     id: 'nav'
-    on_leave: app.frontglass.remove_SideMenuButton()
+    on_leave: app.frontglass.remove_side_menu_button()
     FloatLayout:
         Image:
             source: 'rsc/screens/Menu_Nav.png'
@@ -127,7 +128,7 @@ Builder.load_string("""
 
 
 class NavigationScreen(Screen):
-    sidemenu = ObjectProperty(SideMenu)
+    sidemenu = ObjectProperty(SideMenu(None))
 
 
 class HomeScreen(Screen):
@@ -162,15 +163,14 @@ sm.index = -1
 class ConsoleApp(App):
     carputer = None
     init_state = {}
-    scrman = ObjectProperty(sm)
-    scrcur = ObjectProperty(sm.current)
-    frontglass = ObjectProperty()
+    sm = ObjectProperty(sm)
+    # scrcur = ObjectProperty(sm.current)
+    frontglass = ObjectProperty(FrontGlass())
 
     def build(self):
         self.root = Console()
-        self.frontglass = FrontGlass()
         self.root.add_widget(self.frontglass, index=0)
-        self.root.add_widget(sm, index=1)
+        self.root.add_widget(self.sm, index=1)
         return self.root
 
     def set_controller(self, controller):
@@ -181,7 +181,5 @@ class ConsoleApp(App):
         climate.startup(init_state['climate'])
         self.init_state = init_state
 
-    def on_enter(self):
-        print('sadfsd')
 if __name__ == '__main__':
     ConsoleApp().run()

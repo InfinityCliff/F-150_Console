@@ -1,7 +1,7 @@
 from kivy.uix.modalview import ModalView
 from kivy.clock import Clock
 from functools import partial
-from kivy.uix.label import Label
+# from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
 
 from side_menu import SideMenuButton
@@ -79,9 +79,9 @@ class FrontGlass(FloatLayout):
             Clock.unschedule(touch.ud['event'])
             self.touch = None
 
-    def add_SideMenuButton(self):
+    def add_side_menu_button(self):
 
         self.add_widget(self.side_menu_button)
 
-    def remove_SideMenuButton(self):
+    def remove_side_menu_button(self):
         self.remove_widget(self.side_menu_button)

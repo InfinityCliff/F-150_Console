@@ -1,21 +1,22 @@
-import canbus
 
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.screenmanager import NoTransition
 
-from kivy.animation import Animation
+# from kivy.animation import Animation
 
 from kivy.uix.boxlayout import BoxLayout
 
-from kivy.uix.label import Label
-from kivy.uix.button import Button
-from kivy.uix.popup import Popup
+# from kivy.uix.label import Label
+# from kivy.uix.button import Button
+# from kivy.uix.popup import Popup
 
 from kivy.properties import ObjectProperty
 
 from side_menu import SideMenu, common_kv
+import canbus
 
 ipod_screen_kv = """
+
 <iPod>:
 
 """
@@ -45,15 +46,14 @@ class Aux(Screen):
 
 
 music_menu_screen_kv = """ 
-<Music_Screen_Side_Menu>:    
+<MusicScreenSideMenuContent>:    
     id: music_side_menu
     orientation: 'vertical'
     Button:
         text: 'iPod'
         on_press: 
-            print(root.parent)
-            #sidemenu.current_screen.manager.current = 'ipod'
-            #sidemenu.dismiss()                    
+            sidemenu.change_screen('ipod')
+            sidemenu.dismiss()                    
     Button:
         text: 'radio'
         on_press: 
@@ -66,35 +66,32 @@ music_menu_screen_kv = """
             #sidemenu.dismiss()                            
 """
 
-class Music_Screen_Side_Menu(BoxLayout):
+
+class MusicScreenSideMenuContent(BoxLayout):
     pass
 
 
 class MusicScreen(Screen):
-    sm = ObjectProperty(None)
-    side_menu_content = ObjectProperty(None)
+    sm = ObjectProperty(ScreenManager())
+    sidemenu = ObjectProperty(SideMenu(sm))
 
     def __init__(self, **kwargs):
         super(MusicScreen, self).__init__(**kwargs)
-        self.sm = ScreenManager()
         self.sm.add_widget(iPod(name='ipod'))
         self.sm.add_widget(Radio(name='radio'))
         self.sm.add_widget(Aux(name='aux'))
         self.sm.transition = NoTransition()
         self.add_widget(self.sm)
-        self.sidemenu = SideMenu()
-        self.sidemenu.add_content_(Music_Screen_Side_Menu())
+        #self.sidemenu = SideMenu(self.sm)
+        self.sidemenu.add_content_(MusicScreenSideMenuContent())
 
     def open_side_menu(self):
         self.sidemenu.open()
-        #self.sidemenu.add_content_(Music_Screen_Side_Menu())
-
 
     def send_CANBUS(self, code):
-        # TODO will translate buttun presses to appropriate can-bus codes and send
+        # TODO will translate button presses to appropriate can-bus codes and send
         # TODO controller to tx on CAN-BUS
         canbus.send(code)
-
 
 
 music_screen_kv = """
@@ -102,7 +99,7 @@ music_screen_kv = """
 # === Base Screen ==================================     
 <MusicScreen>:
     id: music
-    on_leave: app.frontglass.remove_SideMenuButton()
+    on_leave: app.frontglass.remove_side_menu_button()
     FloatLayout:
         Image:
             source: 'rsc/screens/Music.png'
