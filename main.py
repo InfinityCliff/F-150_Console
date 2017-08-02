@@ -24,12 +24,12 @@ class Carputer(object):
 
 if __name__ == '__main__':
 
-    _carputer = Carputer()
+    #_carputer = Carputer()
 
     _console = console.ConsoleApp()
-    _console.set_controller(_carputer)
+    #_console.set_controller(_carputer)
 
-    _carputer.set_view(_console)
+    #_carputer.set_view(_console)
 
-    _console.startup(read_init_state())
+    #_console.startup(read_init_state())
     _console.run()

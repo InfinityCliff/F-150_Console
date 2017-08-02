@@ -5,6 +5,7 @@ Config.set('graphics', 'height', '480')
 
 from kivy.app import App
 from kivy.lang import Builder
+from kivy.clock import Clock
 
 # from kivy.graphics.vertex_instructions import (Rectangle, Ellipse, Line)
 # from kivy.graphics import Color
@@ -19,16 +20,17 @@ from kivy.uix.button import Button
 # from kivy.uix.label import Label
 # from kivy.uix.image import Image
 
-# from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.modalview import ModalView
 
 from climate_screen import climate_screen_kv, ClimateScreen
 from music_screen import music_screen_kv, MusicScreen
 from phone_screen import phone_screen_kv, PhoneScreen
-from front_glass import front_glass_kv, FrontGlass
 
-from side_menu import SideMenu
 
+#from side_menu import SideMenu
+from functools import partial
 
 Builder.load_string("""
 #:import partial functools
@@ -44,27 +46,6 @@ Builder.load_string("""
     
 
 
-<HOMEButton@Button>
-    size_hint_x: None
-    size_hint_y: None        
-    size: 40, 40
-    pos: 350,10
-    background_color: [1,1,1,0]
-    Image:
-        source: 'rsc/buttons/home.png'
-        size: 40,40
-        pos: 350,10
-
-<SETButton@Button>
-    size_hint_x: None
-    size_hint_y: None        
-    size: 40, 40
-    pos: 410,10
-    background_color: [1,1,1,0]
-    Image:
-        source: 'rsc/buttons/settings.png'
-        size: 40,40
-        pos: 410,10   
 
 <MMButton@Button>
     size_hint_x: None
@@ -78,37 +59,6 @@ Builder.load_string("""
 <MENUButtons>
     HOMEButton:
     SETButton:
-    
-<HomeScreen>:
-    id: 'home'
-    size: 800, 480
-    on_leave: app.frontglass.add_side_menu_button()
-    FloatLayout:
-        size: 800, 480
-        Image:
-            source: 'rsc/screens/Main.png'
-            allow_stretch: False 
-        MMButton:
-            pos: 0, 423
-            text: '  Phone'
-            on_release: root.manager.current = 'phone'
-            halign: 'left'
-        MMButton:
-            pos: 520,423
-            text: 'Navigation  '
-            on_release: root.manager.current = 'nav'
-            halign: 'right'
-        MMButton:
-            pos: 0, 9
-            text: '  Music'
-            on_release: root.manager.current = 'music'
-            halign: 'left'
-        MMButton:
-            pos: 520, 9
-            text: 'Climate  '
-            on_release: root.manager.current = 'climate'
-            halign: 'right'
-            
 
 <NavigationScreen>:
     id: 'nav'
@@ -124,11 +74,61 @@ Builder.load_string("""
 
      
 
-""" + climate_screen_kv + music_screen_kv + phone_screen_kv + front_glass_kv)
+    
+""" + climate_screen_kv + music_screen_kv + phone_screen_kv)
 
+
+# Front Glass  ------------------------------------------
+
+class NormalPane(FloatLayout):
+    pass
+
+
+class QuitPane(ModalView):
+    pass
+
+
+class FrontGlass(FloatLayout):
+    normal_pane = ObjectProperty()
+    quit_pane = ObjectProperty()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.bind(
+            on_touch_down=self.create_clock,
+            on_touch_up=self.delete_clock)
+        #self.quit_menu = QuitMenu()
+        #self.side_menu = SideMenu()
+        self.normal_pane = NormalPane()
+        self.quit_pane = QuitPane()
+        self.show_Normal_Pane()
+        self.touch = None
+
+    def show_Normal_Pane(self):
+        self.clear_widgets()
+        self.add_widget(self.normal_pane)
+
+    def create_clock(self, widget, touch, *args):
+        self.touch = touch
+        callback = partial(self.quit_pane.open, self.touch)
+        Clock.schedule_once(callback, 2)
+        self.touch.ud['event'] = callback
+
+    def delete_clock(self, widget, touch, *args):
+        if self.touch:
+            Clock.unschedule(touch.ud['event'])
+            self.touch = None
+
+            #def add_side_menu_button(self):
+
+            #    self.add_widget(self.side_menu_button)
+
+            #def remove_side_menu_button(self):
+            #    self.remove_widget(self.side_menu_button)
+# ^Front Glass  ----------------------------------------^
 
 class NavigationScreen(Screen):
-    sidemenu = ObjectProperty(SideMenu(None))
+    sidemenu = ObjectProperty()
 
 
 class HomeScreen(Screen):
@@ -148,22 +148,52 @@ class Console(FloatLayout):
         super(Console, self).__init__(**kwargs)
 
 # Create the screen manager
-sm = ScreenManager()
-sm.id = 'scrman'
-sm.add_widget(HomeScreen(name='home'))
-sm.add_widget(PhoneScreen(name='phone'))
-sm.add_widget(NavigationScreen(name='nav'))
-sm.add_widget(MusicScreen(name='music'))
-sm.add_widget(ClimateScreen(name='climate'))
-sm.add_widget(SettingsScreen(name='settings'))
-sm.transition = NoTransition()
-sm.index = -1
+#sm = ScreenManager()
+#sm.id = 'scrman'
+#sm.add_widget(HomeScreen(name='home'))
+#sm.add_widget(PhoneScreen(name='phone'))
+#sm.add_widget(NavigationScreen(name='nav'))
+#sm.add_widget(MusicScreen(name='music'))
+#sm.add_widget(ClimateScreen(name='climate'))
+#sm.add_widget(SettingsScreen(name='settings'))
+#sm.transition = NoTransition()
+#sm.index = -1
+
+class Manager(ScreenManager):
+    home_screen = ObjectProperty()
+    phone_screen = ObjectProperty()
+    music_screen = ObjectProperty()
+
+class ConsoleRoot(FloatLayout):
+    sm = ObjectProperty()
+    front_glass = ObjectProperty()
+    current = ObjectProperty()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.sm = Manager()
+        #self.sm.add_widget(HomeScreen(name='home'))
+        #self.sm.add_widget(PhoneScreen(name='phone'))
+        self.sm.transition = NoTransition()
+        #self.current = self.sm.current
+        self.front_glass = FrontGlass()
+        self.add_widget(self.sm)
+        self.add_widget(self.front_glass)
+
+    def on_current(self, widget, ev):
+        print(widget)
+        print(ev)
+        print(self.sm.current_screen)
 
 
 class ConsoleApp(App):
+    pass
+
+
+class TempfromConssoleApp():
     carputer = None
     init_state = {}
-    sm = ObjectProperty(sm)
+    #sm = ObjectProperty(sm)
     # scrcur = ObjectProperty(sm.current)
     frontglass = ObjectProperty(FrontGlass())
 
@@ -177,8 +207,8 @@ class ConsoleApp(App):
         self.carputer = controller
 
     def startup(self, init_state):
-        climate = sm.get_screen('climate')
-        climate.startup(init_state['climate'])
+        #climate = sm.get_screen('climate')
+        #climate.startup(init_state['climate'])
         self.init_state = init_state
 
 if __name__ == '__main__':

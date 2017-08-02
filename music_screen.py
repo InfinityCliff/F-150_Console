@@ -73,7 +73,7 @@ class MusicScreenSideMenuContent(BoxLayout):
 
 class MusicScreen(Screen):
     sm = ObjectProperty(ScreenManager())
-    sidemenu = ObjectProperty(SideMenu(sm))
+    sidemenu = ObjectProperty()
 
     def __init__(self, **kwargs):
         super(MusicScreen, self).__init__(**kwargs)
@@ -83,7 +83,7 @@ class MusicScreen(Screen):
         self.sm.transition = NoTransition()
         self.add_widget(self.sm)
         #self.sidemenu = SideMenu(self.sm)
-        self.sidemenu.add_content_(MusicScreenSideMenuContent())
+        #self.sidemenu.add_content_(MusicScreenSideMenuContent())
 
     def open_side_menu(self):
         self.sidemenu.open()

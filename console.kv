@@ -1,0 +1,151 @@
+ConsoleRoot:
+
+<ConsoleRoot>:
+
+
+# Front Glass  ------------------------------------------
+<FrontGlass>:
+    id: frontglass
+    canvas.after:
+        Color:
+            rgba: [0,0,1,.2]
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    #FloatLayout:
+    #    id: frontglasslayout
+
+<QuitPane>:
+    id: quit_pane
+    FloatLayout:
+        pos_hint: None, None
+        pos: 10, 10
+        size_hint: None, None
+        size: 335, 335
+        canvas.after:
+            Rectangle:
+                size: self.size
+                pos: self.pos
+                source: 'rsc/logo/InfinityCliffLogoClear-Red.png'
+        BoxLayout:
+            id: popup
+            size_hint: None, None
+            size: 290, 60
+            #pos_hint: None, None
+            pos: 10, 370
+            orientation: 'vertical'
+            Button:
+                id: quit_button
+                on_release: quit()
+                size_hint: None, None
+                size: 290, 30
+                background_normal: 'rsc/buttons/quit_car_pc.png'
+            Button:
+                text: 'CAN-BUS Console'
+                size_hint: None, None
+                size: 290, 30
+            Button:
+                id: cancel
+                on_release: quit_menu.dismiss()
+                size_hint: None, None
+                size: 80, 30
+                pos_hint: {'center_x': 0.5, 'y': 1}
+                background_normal: 'rsc/buttons/cancel.png'
+
+<NormalPane>:
+    SideMenu:
+
+# ^Front Glass  ----------------------------------------^
+
+
+# Home Screen  ------------------------------------------
+<HomeScreen>:
+    #id: 'home'
+    size: 800, 480
+    #on_leave: app.root.front_glass.add_side_menu_button()
+    FloatLayout:
+        size: 800, 480
+        Image:
+            source: 'rsc/screens/Main.png'
+            allow_stretch: False
+        MMButton:
+            pos: 0, 423
+            text: '  Phone'
+            on_release: app.root.sm.current = 'phone'
+            halign: 'left'
+        MMButton:
+            pos: 520,423
+            text: 'Navigation  '
+            on_release: pass #root.manager.current = 'nav'
+            halign: 'right'
+        MMButton:
+            pos: 0, 9
+            text: '  Music'
+            on_release: app.root.sm.current = 'music'
+            halign: 'left'
+        MMButton:
+            pos: 520, 9
+            text: 'Climate  '
+            on_release: pass #root.manager.current = 'climate'
+            halign: 'right'
+
+<HOMEButton@Button>
+    size_hint_x: None
+    size_hint_y: None
+    size: 40, 40
+    pos: 350,10
+    background_color: [1,1,1,0]
+    Image:
+        source: 'rsc/buttons/home.png'
+        size: 40,40
+        pos: 350,10
+
+<SETButton@Button>
+    size_hint_x: None
+    size_hint_y: None
+    size: 40, 40
+    pos: 410,10
+    background_color: [1,1,1,0]
+    Image:
+        source: 'rsc/buttons/settings.png'
+        size: 40,40
+        pos: 410,10
+# ^Home Screen  ----------------------------------------^
+
+
+# Music Screen  -----------------------------------------
+<MusicScreen>:
+    id: music
+    #on_leave: app.frontglass.remove_side_menu_button()
+    FloatLayout:
+        Image:
+            source: 'rsc/screens/Music.png'
+            allow_stretch: False
+        HOMEButton:
+            on_release: root.manager.current = 'home'
+        SETButton:
+# ^Music Screen  ---------------------------------------^
+
+
+
+<Manager>:
+    id: screen_manager
+
+    home_screen: home
+    phone_screen: phone
+    music_screen: music
+
+    HomeScreen:
+        id: home
+        name: 'home'
+        manager: screen_manager
+
+    PhoneScreen:
+        id: phone
+        name: 'phone'
+        manager: screen_manager
+
+    MusicScreen:
+        id: music
+        name: 'music'
+        manager: screen_manager

@@ -3,37 +3,25 @@ from kivy.uix.popup import Popup
 from kivy.properties import ObjectProperty
 # from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-
-
-class SideMenuButton(Button):
-    pass
-
+from kivy.uix.widget import Widget
 
 common_kv = """
-<SideMenuButton>:
-    size_hint: None, None
-    size: 30, 356
-    text: '>>'
-    #pos_hint: 1, None
-    y: 69
-    background_color: [.5,.5,.5,.4]
-    on_press: self.background_color = [.5,.5,.8,.6]
-    on_release: 
-        app.sm.current_screen.sidemenu.open()
-        self.background_color = [.5,.5,.5,.4]
-    
-<SideMenu>:
-    button_content: bc
+#: import Factory kivy.factory.Factory
+
+<SideMenuContent@Popup>
+   #button_content: bc
+    menu_content: menu_content
     id: sidemenu
     size_hint: None, 1
     width: 150
     pos_hint: {'x': 0}
     x: 0
     halign: 'center'
+    #on_start: print('starting menu')
     BoxLayout:
         id: bl
         BoxLayout:
-            id: bc
+            id: menu_content
             pos_hint: {'center_y': 0.5}
             size_hint_y: None
             height: 90
@@ -42,21 +30,33 @@ common_kv = """
         Button:
             text: '<<'
             on_press:
-                sidemenu.dismiss()
+                print('dismiss')
+                root.dismiss() 
+                
+<SideMenuButton@Button>:
+    size_hint: None, None
+    size: 30, 356
+    text: '>>'
+    #pos_hint: 1, None
+    y: 69
+    background_color: [.5,.5,.5,.4]
+    on_press: self.background_color = [.5,.5,.8,.6]
+    on_release:
+        root.add_widget(Factory.SideMenuContent())
+        #app.sm.current_screen.sidemenu.open()
+        #root.menu_content.add_widget(app.root.sm.current_screen.menu_content)
+        self.background_color = [.5,.5,.5,.4]
+
+
+<SideMenu>:
+    SideMenuButton:
 """
 
 
-class SideMenu(Popup):
+class SideMenu(Widget):
     button_content = ObjectProperty()
+    menu_content = ObjectProperty()
 
-    def __init__(self, screen_manager, **kwargs):
-        super(SideMenu, self).__init__(**kwargs)
-        self.sm = screen_manager
-
-    def add_content_(self, widget):
-        pass
-        #self.button_content.clear_widgets()
-        #self.button_content.add_widget(widget)
-
-    def change_screen(self, screen_name):
-        self.sm.current = screen_name
+    #def __init__(self, screen_manager, **kwargs):
+    #    super(SideMenu, self).__init__(**kwargs)
+    #    self.sm = screen_manager
