@@ -1,0 +1,273 @@
+# Side Menu ------------------------------------------------------------------
+<PhoneScreenSideMenu@BoxLayout>:
+    id: phone_side_menu
+    orientation: 'vertical'
+    Button:
+        text: 'Phone'
+        on_press:
+            app.root.active_manager.current = 'dialer'
+            app.root.side_menu_controller.dismiss()
+    Button:
+        text: 'Favorites'
+        on_press:
+            app.root.active_manager.current = 'favorites'
+            app.root.side_menu_controller.dismiss()
+    Button:
+        text: 'Contacts'
+        on_press:
+            app.root.active_manager.current = 'contacts'
+            app.root.side_menu_controller.dismiss()
+# ^Side Menu ----------------------------------------------------------------^
+
+
+# Call Menu ------------------------------------------------------------------
+<CallButton@Button>:
+    size_hint: None, None
+    size: 150, 100
+    pos: 50, 80
+    text: 'dial'
+
+# ^Call Menu ----------------------------------------------------------------^
+
+
+# Dial Pad -------------------------------------------------------------------
+<NumberButton@Button>
+    id: btn
+    num: '-1'
+    on_release: root.change_number(self.num)
+    halign: 'center'
+
+<DialPad>:
+    id: dial_pad
+    phone_number: phonenumber
+    size_hint: None, None
+    size: 280, 280
+    x: self.parent.center_x - self.width/2
+    y: 120
+    Button:
+        size_hint: None, None
+        size: 40,40
+        pos_hint: {'right': 1, 'top': 1}
+        text: '<-'
+        on_press: phonenumber.text = phonenumber.text[:-1]
+    BoxLayout:
+        orientation: 'vertical'
+        size: self.parent.size
+        pos: self.parent.pos
+        Label:
+            id: phonenumber
+            size_hint_y: None
+            height: 40
+            font_size: 30
+        GridLayout:
+            id: phone_grid
+            cols: 3
+            NumberButton:
+                num: '1'
+                text: "1\\n"
+            NumberButton:
+                num: '2'
+                text: "2\\nABC"
+            NumberButton:
+                num: '3'
+                text: "3\\nDEF"
+            NumberButton:
+                num: '4'
+                text: "4\\nGHI"
+            NumberButton:
+                num: '5'
+                text: "5\\nJKL"
+            NumberButton:
+                num: '6'
+                text: "6\\nMNO"
+            NumberButton:
+                num: '7'
+                text: "7\\nPQRS"
+            NumberButton:
+                num: '8'
+                text: "8\\nTUV"
+            NumberButton:
+                num: '9'
+                text: "9\\nWXYZ"
+            NumberButton:
+                num: '*'
+                text: "*\\n"
+            NumberButton:
+                num: '0'
+                text: "0\\n+"
+            NumberButton:
+                num: '#'
+                text: "#\\n"
+# ^Dial Pad -----------------------------------------------------------------^
+
+<Dialer>:
+    PhoneMenu:
+    CallButton:
+    DialPad:
+    Button:
+        id: contact_photo
+        size_hint: None, None
+        size: 170, 170
+        pos: 600, 230
+    Label:
+        id: contact_name
+        size_hint: None, None
+        width: self.parent.ids.contact_photo.width
+        height: 30
+        x: self.parent.ids.contact_photo.x
+        y: self.parent.ids.contact_photo.y - self.height-5
+        text: 'default'
+
+
+# Favorites ------------------------------------------------------------------
+<FavoritesMenuButton@Button>:
+
+<FavoritesButton@Button>:
+
+<Favorites>:
+    sc: favorites_contacts
+    PhoneMenu:
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint: None, None
+        size: 225, 275
+        x: self.parent.center_x - self.width/2
+        y: 120
+        BoxLayout:
+            size_hint: None, 0.25
+            pos_hint: {'top': 1}
+            FavoritesMenuButton:
+                text: 'List'
+                on_release:
+            FavoritesMenuButton:
+                text: 'Grid'
+                on_release:
+                    favorites_contacts.cols = 3
+        ScrollView:
+            viewport_size: 225, 225
+            GridLayout:
+                id: favorites_contacts
+                cols: 3
+                row_default_height: 75
+                row_force_default: True
+                size_hint: None, None
+                size: 225, 225
+                FavoritesButton:
+                FavoritesButton:
+                FavoritesButton:
+                FavoritesButton:
+# ^Favorites ----------------------------------------------------------------^
+
+
+# Contacts -------------------------------------------------------------------
+#:import vkb kivy.uix.vkeyboard.VKeyboard
+
+<Contacts>:
+    PhoneMenu:
+    BoxLayout:
+        id: contact_base
+        orientation: 'vertical'
+        size: 635, 340
+        pos: 165, 70
+        BoxLayout:
+            size_hint: None, None
+            #pos_hint: None, None
+            size: 635, 340
+            pos: 165, 70
+            orientation: 'vertical'
+            BoxLayout:
+                size_hint: 1, None
+                height: 40
+                Button:
+                    text: 'Groups'
+                    size_hint: None, 1
+                TextInput:
+                    text: 'Search'
+                    size_hint: 0.75, 1
+                    halign: 'center'
+                    on_focus:
+                        self.text = '' if self.focus else 'Search'
+            ScrollView:
+                BoxLayout:
+                    orientation: 'vertical'
+                    Button:
+                    Button:
+                    Button:
+                    Button:
+                    Button:
+                    Button:
+                    Button:
+                    Button:
+                    Button:
+# ^Contacts -----------------------------------------------------------------^
+
+
+# Phone Screen  --------------------------------------------------------------
+<PhoneMenuButton@Button>:
+    text: 'default'
+
+<PhoneMenu@BoxLayout>:
+    orientation: 'vertical'
+    size_hint: None, None
+    size: 125, 190
+    x: 20
+    y: 210
+    PhoneMenuButton:
+        text: 'Phone'
+        on_release: root.parent.manager.current = 'dialer'
+    PhoneMenuButton:
+        text: 'Favorites'
+        on_release: root.parent.manager.current = 'favorites'
+    PhoneMenuButton:
+        text: 'Contacts'
+        on_release: root.parent.manager.current = 'contacts'
+    PhoneMenuButton:
+        text: 'Settings'
+        on_release: # root.parent.pm.current = 'settings'
+
+# === Base Screen ==================================
+<PhoneScreen>:
+    index: 1
+    canvas.before:
+        Rectangle:
+            source: 'rsc/screens/Menu_Phone.png'
+            size: self.size
+            pos: self.pos
+    FloatLayout:
+        HOMEButton:
+            on_release: root.manager.current = 'home'
+        SETButton:
+        SideMenu:
+# === Base Screen ==================================
+# ^Phone Screen -------------------------------------------------------------^
+
+
+# Phone Screen Manager -------------------------------------------------------
+<PhoneManager>:
+    id: phone_manager
+    transition: NoTransition()
+    index: 0
+
+    dialer_screen: dialer
+    favorites_screen: favorites
+    contacts_screen: contacts
+    on_current: app.root.active_screen = self.current
+
+    Dialer:
+        index: 0
+        id: dialer
+        name: 'dialer'
+        manager: phone_manager
+
+    Favorites:
+        index: -1
+        id: favorites
+        name: 'favorites'
+        manager: phone_manager
+
+    Contacts:
+        index: 0
+        id: contacts
+        name: 'contacts'
+        manager: phone_manager
+# ^Phone Screen Manager -----------------------------------------------------^

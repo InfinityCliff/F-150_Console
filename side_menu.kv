@@ -1,0 +1,40 @@
+#: import Factory kivy.factory.Factory
+
+<SideMenuContent>
+    sidemenu: sidemenu
+    menu_content: menu_content
+    id: sidemenu
+    size_hint: None, 1
+    width: 150
+    pos_hint: {'x': 0}
+    x: 0
+    halign: 'center'
+    #on_start: print('starting menu')
+    BoxLayout:
+        id: bl
+        BoxLayout:
+            id: menu_content
+            pos_hint: {'center_y': 0.5}
+            size_hint_y: None
+            height: 90
+            size_hint_x: None
+            width: 100
+        Button:
+            text: '<<'
+            on_press: root.dismiss()
+
+<SideMenuButton@Button>:
+    size_hint: None, None
+    size: 30, 356
+    text: '>>'
+    y: 69
+    background_color: [.5,.5,.5,.4]
+    on_press: self.background_color = [.5,.5,.8,.6]
+    on_release:
+        root.parent.show_side_menu()
+        self.background_color = [.5,.5,.5,.4]
+
+
+<SideMenu>:
+    id: gdfgdfg
+    SideMenuButton:

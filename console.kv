@@ -1,68 +1,21 @@
+#: import SideMenu side_menu
+#: import NoTransition kivy.uix.screenmanager.NoTransition
+
 ConsoleRoot:
 
 <ConsoleRoot>:
 
+<MMButton@Button>
+    size_hint_x: None
+    size_hint_y: None
+    size: 280, 46
+    #text_size: 280,46
+    valign: 'center'
+    background_color: [0, 0, 0, 0]
 
-# Front Glass  ------------------------------------------
-<FrontGlass>:
-    id: frontglass
-    canvas.after:
-        Color:
-            rgba: [0,0,1,.2]
-        Rectangle:
-            size: self.size
-            pos: self.pos
-    #FloatLayout:
-    #    id: frontglasslayout
-
-<QuitPane>:
-    id: quit_pane
-    FloatLayout:
-        pos_hint: None, None
-        pos: 10, 10
-        size_hint: None, None
-        size: 335, 335
-        canvas.after:
-            Rectangle:
-                size: self.size
-                pos: self.pos
-                source: 'rsc/logo/InfinityCliffLogoClear-Red.png'
-        BoxLayout:
-            id: popup
-            size_hint: None, None
-            size: 290, 60
-            #pos_hint: None, None
-            pos: 10, 370
-            orientation: 'vertical'
-            Button:
-                id: quit_button
-                on_release: quit()
-                size_hint: None, None
-                size: 290, 30
-                background_normal: 'rsc/buttons/quit_car_pc.png'
-            Button:
-                text: 'CAN-BUS Console'
-                size_hint: None, None
-                size: 290, 30
-            Button:
-                id: cancel
-                on_release: quit_menu.dismiss()
-                size_hint: None, None
-                size: 80, 30
-                pos_hint: {'center_x': 0.5, 'y': 1}
-                background_normal: 'rsc/buttons/cancel.png'
-
-<NormalPane>:
-    SideMenu:
-
-# ^Front Glass  ----------------------------------------^
-
-
-# Home Screen  ------------------------------------------
+# Home Screen  ---------------------------------------------------------------
 <HomeScreen>:
-    #id: 'home'
     size: 800, 480
-    #on_leave: app.root.front_glass.add_side_menu_button()
     FloatLayout:
         size: 800, 480
         Image:
@@ -86,10 +39,18 @@ ConsoleRoot:
         MMButton:
             pos: 520, 9
             text: 'Climate  '
-            on_release: pass #root.manager.current = 'climate'
+            on_release: root.manager.current = 'climate'
             halign: 'right'
+        SideMenu:
 
-<HOMEButton@Button>
+<HomeScreenSideMenu@BoxLayout>:
+    orientation: 'vertical'
+    Button:
+        text: 'test'
+    Button:
+        text: 'test'
+
+<HOMEButton@Button>:
     size_hint_x: None
     size_hint_y: None
     size: 40, 40
@@ -110,34 +71,29 @@ ConsoleRoot:
         source: 'rsc/buttons/settings.png'
         size: 40,40
         pos: 410,10
-# ^Home Screen  ----------------------------------------^
+# ^Home Screen  -------------------------------------------------------------^
 
 
-# Music Screen  -----------------------------------------
-<MusicScreen>:
-    id: music
-    #on_leave: app.frontglass.remove_side_menu_button()
-    FloatLayout:
-        Image:
-            source: 'rsc/screens/Music.png'
-            allow_stretch: False
-        HOMEButton:
-            on_release: root.manager.current = 'home'
-        SETButton:
-# ^Music Screen  ---------------------------------------^
-
-
-
+# Primary Screen Manager  ----------------------------------------------------
 <Manager>:
     id: screen_manager
+    transition: NoTransition()
 
     home_screen: home
-    phone_screen: phone
     music_screen: music
+    phone_screen: phone
+    climate_screen: climate
+
+    on_current: app.root.active_screen = self.current
 
     HomeScreen:
         id: home
         name: 'home'
+        manager: screen_manager
+
+    MusicScreen:
+        id: music
+        name: 'music'
         manager: screen_manager
 
     PhoneScreen:
@@ -145,7 +101,8 @@ ConsoleRoot:
         name: 'phone'
         manager: screen_manager
 
-    MusicScreen:
-        id: music
-        name: 'music'
+    ClimateScreen:
+        id: climate
+        name: 'climate'
         manager: screen_manager
+# ^Primary Screen Manager  --------------------------------------------------^

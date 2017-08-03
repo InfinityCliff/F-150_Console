@@ -1,0 +1,72 @@
+# Side Menu ------------------------------------------------------------------
+<MusicScreenSideMenu@BoxLayout>:
+    id: music_side_menu
+    orientation: 'vertical'
+    Button:
+        text: 'iPod'
+        on_press:
+            app.root.active_manager.current = 'ipod'
+            app.root.side_menu_controller.dismiss()
+    Button:
+        text: 'radio'
+        on_press:
+            app.root.active_manager.current = 'radio'
+            app.root.side_menu_controller.dismiss()
+    Button:
+        text: 'AUX'
+        on_press:
+            app.root.active_manager.current = 'aux'
+            app.root.side_menu_controller.dismiss()
+# ^Side Menu ----------------------------------------------------------------^
+
+
+<IpodScreen@Screen>:
+
+<RadioScreen@Screen>:
+
+<AuxScreen@Screen>:
+
+
+# Music Screen ---------------------------------------------------------------
+# === Base Screen ==================================
+<MusicScreen>:
+    id: music
+    canvas.before:
+        Rectangle:
+            source: 'rsc/screens/Music.png'
+            size: self.size
+            pos: self.pos
+    FloatLayout:
+        HOMEButton:
+            on_release: root.manager.current = 'home'
+        SETButton:
+        SideMenu:
+# === Base Screen ==================================
+# ^Music Screen -------------------------------------------------------------^
+
+
+# Music Screen Manager -------------------------------------------------------
+<MusicManager>:
+    id: music_manager
+    transition: NoTransition()
+
+    ipod_screen: ipod
+    radio_screen: radio
+    aux_screen: aux
+    on_current: app.root.active_screen = self.current
+
+    IpodScreen:
+        id: ipod
+        name: 'ipod'
+        manager: music_manager
+
+    RadioScreen:
+        id: radio
+        name: 'radio'
+        manager: music_manager
+
+    AuxScreen:
+        id: aux
+        name: 'aux'
+        manager: music_manager
+# ^Music Screen Manager -----------------------------------------------------^
