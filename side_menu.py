@@ -16,35 +16,30 @@ side_menu_kv = """
 
 
 class SideMenuContent(Popup):
-    pass
+    active_manager = ObjectProperty()
+
+    def set_manager(self, manager):
+        self.active_manager = manager
 
 
 class SideMenu(FloatLayout):
     sidemenu = ObjectProperty()
-    sidemenucontent = ObjectProperty()
-    #manager = ObjectProperty()
+    #sidemenucontent = ObjectProperty()
+    active_manager = ObjectProperty()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        #app = App.get_running_app()
-        #app.root.side_menu_controller = self
+        self.sidemenu = SideMenuContent()
 
-    def on_sidemenu(self):
-        print('on_sidemenu')
+    def add_content(self, menu_content):
+        self.sidemenu.menu_content.add_widget(menu_content)
 
     def show_side_menu(self):
-        print('show_side_menu')
-        #self.sidemenu = SideMenuContent()
-        #self.sidemenu.open()
-        #self.sidemenucontent, self.manager = self.parent.parent.parent.sm.current_screen.get_side_menu()
-        #app = App.get_running_app()
-        #app.root.active_manager = self.manager
-        #app.root.side_menu_controller = self
-        #self.sidemenu.menu_content.add_widget(self.sidemenucontent)
+        self.sidemenu.open()
 
-
-    def update_menu(self):
-        print('update_menu')
+    def set_manager(self, manager):
+        self.active_manager = manager
+        self.sidemenu.set_manager(self.active_manager)
 
 
 

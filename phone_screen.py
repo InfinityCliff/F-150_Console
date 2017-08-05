@@ -1,3 +1,5 @@
+from kivy.app import App
+
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.screenmanager import NoTransition
 from kivy.factory import Factory
@@ -15,6 +17,8 @@ from kivy.uix.button import Button
 from kivy.properties import ObjectProperty, ListProperty, NumericProperty
 
 from kivy.graphics import InstructionGroup, Color, Rectangle, Line
+
+from side_menu import SideMenu
 
 import re
 
@@ -99,7 +103,7 @@ class Favorites(Screen):
 class Contacts(Screen):
 
     def __init__(self, **kwargs):
-        super(Contacts, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         Config.get('kivy', 'keyboard_mode'),
         Config.get('kivy', 'keyboard_layout')
 
@@ -112,12 +116,18 @@ class PhoneManager(ScreenManager):
 
 class PhoneScreen(Screen):
     pm = ObjectProperty()
+    screen_side_menu = ObjectProperty()
 
     def __init__(self, **kwargs):
-        super(PhoneScreen, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.pm = PhoneManager()
         self.add_widget(self.pm)
+        self.screen_side_menu = SideMenu()
+        self.screen_side_menu.add_content(Factory.PhoneScreenSideMenu())
+        self.screen_side_menu.set_manager(self.pm)
+        self.add_widget(self.screen_side_menu)
 
-    def get_side_menu(self):
-        return Factory.PhoneScreenSideMenu(), self.pm
+    def show_side_menu(self):
+        pass
+        #self.screen_side_menu.show_side_menu()
 

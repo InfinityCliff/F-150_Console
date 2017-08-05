@@ -1,9 +1,11 @@
 #: import SideMenu side_menu
 #: import NoTransition kivy.uix.screenmanager.NoTransition
 
+
 ConsoleRoot:
 
 <ConsoleRoot>:
+
 
 <MMButton@Button>
     size_hint_x: None
@@ -15,6 +17,7 @@ ConsoleRoot:
 
 # Home Screen  ---------------------------------------------------------------
 <HomeScreen>:
+    active_manager: root.manager
     size: 800, 480
     FloatLayout:
         size: 800, 480
@@ -29,7 +32,7 @@ ConsoleRoot:
         MMButton:
             pos: 520,423
             text: 'Navigation  '
-            on_release: pass #root.manager.current = 'nav'
+            on_release: pass #app.root.sm.current = 'nav'
             halign: 'right'
         MMButton:
             pos: 0, 9
@@ -39,14 +42,16 @@ ConsoleRoot:
         MMButton:
             pos: 520, 9
             text: 'Climate  '
-            on_release: root.manager.current = 'climate'
+            on_release: app.root.sm.current = 'climate'
             halign: 'right'
-        SideMenu:
 
 <HomeScreenSideMenu@BoxLayout>:
     orientation: 'vertical'
     Button:
         text: 'test'
+        on_press:
+            popup = [w for w in self.walk_reverse()][-1]
+            print(popup)
     Button:
         text: 'test'
 

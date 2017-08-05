@@ -5,18 +5,21 @@
     Button:
         text: 'Phone'
         on_press:
-            app.root.active_manager.current = 'dialer'
-            app.root.side_menu_controller.dismiss()
+            popup = [w for w in self.walk_reverse()][-1]
+            popup.active_manager.current = 'dialer'
+            popup.dismiss()
     Button:
         text: 'Favorites'
         on_press:
-            app.root.active_manager.current = 'favorites'
-            app.root.side_menu_controller.dismiss()
+            popup = [w for w in self.walk_reverse()][-1]
+            popup.active_manager.current = 'favorites'
+            popup.dismiss()
     Button:
         text: 'Contacts'
         on_press:
-            app.root.active_manager.current = 'contacts'
-            app.root.side_menu_controller.dismiss()
+            popup = [w for w in self.walk_reverse()][-1]
+            popup.active_manager.current = 'contacts'
+            popup.dismiss()
 # ^Side Menu ----------------------------------------------------------------^
 
 
@@ -230,14 +233,13 @@
     index: 1
     canvas.before:
         Rectangle:
-            source: 'rsc/screens/Menu_Phone.png'
+            source: 'rsc/screens/Phone.png'
             size: self.size
             pos: self.pos
     FloatLayout:
         HOMEButton:
             on_release: root.manager.current = 'home'
         SETButton:
-        SideMenu:
 # === Base Screen ==================================
 # ^Phone Screen -------------------------------------------------------------^
 
@@ -251,7 +253,11 @@
     dialer_screen: dialer
     favorites_screen: favorites
     contacts_screen: contacts
-    on_current: app.root.active_screen = self.current
+
+    on_current:
+        app.root.active_screen = self.current
+        app.root.active_manager = self
+        print('------------------')
 
     Dialer:
         index: 0

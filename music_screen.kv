@@ -5,18 +5,21 @@
     Button:
         text: 'iPod'
         on_press:
-            app.root.active_manager.current = 'ipod'
-            app.root.side_menu_controller.dismiss()
+            popup = [w for w in self.walk_reverse()][-1]
+            popup.active_manager.current = 'ipod'
+            popup.dismiss()
     Button:
-        text: 'radio'
+        text: 'Radio'
         on_press:
-            app.root.active_manager.current = 'radio'
-            app.root.side_menu_controller.dismiss()
+            popup = [w for w in self.walk_reverse()][-1]
+            popup.active_manager.current = 'radio'
+            popup.dismiss()
     Button:
         text: 'AUX'
         on_press:
-            app.root.active_manager.current = 'aux'
-            app.root.side_menu_controller.dismiss()
+            popup = [w for w in self.walk_reverse()][-1]
+            popup.active_manager.current = 'aux'
+            popup.dismiss()
 # ^Side Menu ----------------------------------------------------------------^
 
 
@@ -40,7 +43,6 @@
         HOMEButton:
             on_release: root.manager.current = 'home'
         SETButton:
-        SideMenu:
 # === Base Screen ==================================
 # ^Music Screen -------------------------------------------------------------^
 
