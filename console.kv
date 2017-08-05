@@ -15,15 +15,19 @@ ConsoleRoot:
     valign: 'center'
     background_color: [0, 0, 0, 0]
 
+<ConsoleScreen>:
+    canvas.before:
+        Rectangle:
+            source: self.image_source
+            size: self.size
+            pos: self.pos
+
 # Home Screen  ---------------------------------------------------------------
 <HomeScreen>:
-    active_manager: root.manager
+    image_source: 'rsc/screens/Main.png'
     size: 800, 480
     FloatLayout:
         size: 800, 480
-        Image:
-            source: 'rsc/screens/Main.png'
-            allow_stretch: False
         MMButton:
             pos: 0, 423
             text: '  Phone'

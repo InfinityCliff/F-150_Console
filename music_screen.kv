@@ -34,11 +34,7 @@
 # === Base Screen ==================================
 <MusicScreen>:
     id: music
-    canvas.before:
-        Rectangle:
-            source: 'rsc/screens/Music.png'
-            size: self.size
-            pos: self.pos
+    image_source: 'rsc/screens/Music.png'
     FloatLayout:
         HOMEButton:
             on_release: root.manager.current = 'home'

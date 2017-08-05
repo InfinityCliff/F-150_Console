@@ -230,12 +230,7 @@
 
 # === Base Screen ==================================
 <PhoneScreen>:
-    index: 1
-    canvas.before:
-        Rectangle:
-            source: 'rsc/screens/Phone.png'
-            size: self.size
-            pos: self.pos
+    image_source: 'rsc/screens/Phone.png'
     FloatLayout:
         HOMEButton:
             on_release: root.manager.current = 'home'

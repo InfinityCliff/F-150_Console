@@ -5,6 +5,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.graphics.vertex_instructions import (Line)
 
 from side_menu import SideMenu
+from console_screen import ConsoleScreen
 
 climate_screen_kv = """
 #:include climate_screen.kv
@@ -62,7 +63,7 @@ class StepSlider(BoxLayout):
                 Line(points=[x1, y1, x2, y2], width=2)
 
 
-class ClimateScreen(Screen):
+class ClimateScreen(ConsoleScreen):
 
     def startup(self, init_state):
         vent_buttons = {1: self.ids.vent_face,

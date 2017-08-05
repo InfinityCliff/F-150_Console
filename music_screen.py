@@ -5,6 +5,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.properties import ObjectProperty
 
 from side_menu import SideMenu
+from console_screen import ConsoleScreen
 
 import canbus
 
@@ -19,7 +20,7 @@ class MusicManager(ScreenManager):
     aux_screen = ObjectProperty()
 
 
-class MusicScreen(Screen):
+class MusicScreen(ConsoleScreen):
     mm = ObjectProperty()
     screen_side_menu = ObjectProperty()
 
@@ -32,8 +33,6 @@ class MusicScreen(Screen):
         self.screen_side_menu.set_manager(self.mm)
         self.add_widget(self.screen_side_menu)
 
-    #def get_side_menu(self):
-    #    return Factory.MusicScreenSideMenu(), self.mm
 
     def send_CANBUS(self, code):
         # TODO will translate button presses to appropriate can-bus codes and send

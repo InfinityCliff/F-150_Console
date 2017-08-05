@@ -19,6 +19,7 @@ from kivy.properties import ObjectProperty, ListProperty, NumericProperty
 from kivy.graphics import InstructionGroup, Color, Rectangle, Line
 
 from side_menu import SideMenu
+from console_screen import ConsoleScreen
 
 import re
 
@@ -114,7 +115,7 @@ class PhoneManager(ScreenManager):
     contacts_screen = ObjectProperty()
 
 
-class PhoneScreen(Screen):
+class PhoneScreen(ConsoleScreen):
     pm = ObjectProperty()
     screen_side_menu = ObjectProperty()
 
@@ -126,8 +127,3 @@ class PhoneScreen(Screen):
         self.screen_side_menu.add_content(Factory.PhoneScreenSideMenu())
         self.screen_side_menu.set_manager(self.pm)
         self.add_widget(self.screen_side_menu)
-
-    def show_side_menu(self):
-        pass
-        #self.screen_side_menu.show_side_menu()
-

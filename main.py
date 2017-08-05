@@ -32,14 +32,14 @@ from phone_screen import phone_screen_kv
 from climate_screen import climate_screen_kv
 
 from side_menu import SideMenu
+from console_screen import ConsoleScreen
+
 # from functools import partial
 
 Builder.load_string("""
 """ + front_glass_kv + side_menu_kv + music_screen_kv + phone_screen_kv + climate_screen_kv)
 
-
-class HomeScreen(Screen):
-    #active_manager = ObjectProperty()
+class HomeScreen(ConsoleScreen):
     screen_side_menu = ObjectProperty()
 
     def __init__(self, **kwargs):
@@ -48,8 +48,6 @@ class HomeScreen(Screen):
         self.screen_side_menu.add_content(Factory.HomeScreenSideMenu())
         self.screen_side_menu.set_manager(self.manager)
         self.add_widget(self.screen_side_menu)
-        print('-----------------------')
-
 
 
 class Console(FloatLayout):
@@ -67,9 +65,6 @@ class Manager(ScreenManager):
 class ConsoleRoot(FloatLayout):
     sm = ObjectProperty()
     front_glass = ObjectProperty()
-    active_screen = ObjectProperty()
-    side_menu_controller = ObjectProperty()
-    active_manager = ObjectProperty()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -78,8 +73,6 @@ class ConsoleRoot(FloatLayout):
         self.add_widget(self.sm)
         self.add_widget(self.front_glass)
 
-    def on_active_screen(self, widget, screen, *args):
-        pass
 
 class ConsoleApp(App):
     pass
