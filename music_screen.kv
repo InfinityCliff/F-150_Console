@@ -34,6 +34,27 @@
         on_press:
 
 # ^Side Menu ----------------------------------------------------------------^
+<SelectionViewClass>:
+    # orientation: 'horizontal'
+    Button:
+        #text: root.text
+        canvas:
+            Color:
+                rgba: [0,0,1,.5]
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        BoxLayout
+            size_hint: None, None
+            pos: self.parent.pos
+            size: self.parent.size
+            Label:
+                text: root.text
+            Label:
+                text: root.artist
+            Label:
+                text: root.album
+
 <SearchBar>:
     orientation: 'vertical'
     BoxLayout:
@@ -43,17 +64,19 @@
             root.add_AlphaButtons(self)
         Button:
             text: 'S'
-    ScrollView:
-        canvas:
-            Color:
-                rgba: [1,1,1,.1]
-            Rectangle:
-                size: self.size
-                pos: self.pos
-        Label:
-            text: 'list of items based on selection on left'
+    SelectionView:
+        id: rv
+        viewclass: 'SelectionViewClass'
 
-<IpodSelectionScreen@Screen>:
+        SelectableRecycleBoxLayout:
+            orientation: 'vertical'
+            default_size: None, dp(56)
+            default_size_hint: 1, None
+            size_hint_y: None
+            height: self.minimum_height
+
+
+<IpodSelectionScreen>:
     size_hint_y1: 0.7
     FloatLayout:
         size_hint: None, None
@@ -68,20 +91,21 @@
             ToggleButton:
                 group: 'ipodlistelector'
                 text: 'Song'
-                on_press:
+                on_press: root.extract_songs()
             ToggleButton:
                 group: 'ipodlistelector'
                 text: 'Album'
-                on_press:
+                on_press: root.extract_albums()
             ToggleButton:
                 group: 'ipodlistelector'
                 text: 'Artist'
-                on_press:
+                on_press: root.extract_artists()
             ToggleButton:
                 group: 'ipodlistelector'
                 text: 'Playlist'
-                on_press:
+                on_press: root.extract_playlists()
         SearchBar:
+            id: search_bar
             size_hint: None, None
             height: 325
             width: 525
@@ -184,7 +208,15 @@
             height: 40
             x: song_info.x
             y: player_control.y - self.height - 10
-
+        Button:
+            x: 10
+            y: 10
+            size_hint: None, None
+            size: 30, 30
+            text: 'list'
+            on_press:
+                root.parent.current = 'ipod_selection'
+                root.parent.current_screen.extract_songs()
 
 <RadioScreen@Screen>:
 
@@ -212,6 +244,8 @@
     ipod_screen: ipod
     radio_screen: radio
     aux_screen: aux
+    ipod_selection_screen: ipod_selection
+
     on_current: app.root.active_screen = self.current
 
     IpodScreen:
@@ -228,4 +262,10 @@
         id: aux
         name: 'aux'
         manager: music_manager
+
+    IpodSelectionScreen:
+        id: ipod_selection
+        name: 'ipod_selection'
+        manager: music_manager
+
 # ^Music Screen Manager -----------------------------------------------------^
