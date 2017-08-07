@@ -24,8 +24,9 @@ class SideMenuContent(Popup):
 
 class SideMenu(FloatLayout):
     sidemenu = ObjectProperty()
+    screen = ObjectProperty()
 
-    def __init__(self, **kwargs):
+    def __init__(self, get_screen=None, **kwargs):
         super().__init__(**kwargs)
         self.sidemenu = SideMenuContent()
 

@@ -20,10 +20,171 @@
             popup = [w for w in self.walk_reverse()][-1]
             popup.active_manager.current = 'aux'
             popup.dismiss()
+    Button:
+        text: 'Shuffle'
+        on_press:
+    Button:
+        text: 'Double Shuffle'
+        on_press:
+    Button:
+        text: 'Album Shuffle'
+        on_press:
+    Button:
+        text: 'Play Album'
+        on_press:
+
 # ^Side Menu ----------------------------------------------------------------^
+<SearchBar>:
+    orientation: 'vertical'
+    BoxLayout:
+        size_hint_y: None
+        height: 30
+        a:
+            root.add_AlphaButtons(self)
+        Button:
+            text: 'S'
+    ScrollView:
+        canvas:
+            Color:
+                rgba: [1,1,1,.1]
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        Label:
+            text: 'list of items based on selection on left'
 
+<IpodSelectionScreen@Screen>:
+    size_hint_y1: 0.7
+    FloatLayout:
+        size_hint: None, None
+        size: 800, 480
+        pos: 0,0
 
-<IpodScreen@Screen>:
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: 0.2, root.size_hint_y1
+            x: 40
+            y: (480 / 2) - (self.height / 2)
+            ToggleButton:
+                group: 'ipodlistelector'
+                text: 'Song'
+                on_press:
+            ToggleButton:
+                group: 'ipodlistelector'
+                text: 'Album'
+                on_press:
+            ToggleButton:
+                group: 'ipodlistelector'
+                text: 'Artist'
+                on_press:
+            ToggleButton:
+                group: 'ipodlistelector'
+                text: 'Playlist'
+                on_press:
+        SearchBar:
+            size_hint: None, None
+            height: 325
+            width: 525
+            x: 250
+            y: 80
+
+<SongProgress@BoxLayout>
+    Label:
+        text: '0:00'
+        size_hint_x: 0.10
+    ProgressBar:
+    Label:
+        text: '0:00'
+        size_hint_x: 0.10
+
+<PlayerContols@BoxLayout>
+    button_size: 30
+    height: self.button_size
+    width: self.button_size * 3
+    Button:
+        text: '<'
+    Button:
+        text: '||'
+    Button:
+        text: '>'
+
+<PlayerModes@BoxLayout>
+    Button:
+        text: 'Play Album'
+        on_press: root.parent.parent.PlayAlbum()
+    Button:
+        text: 'Shuffle'
+        on_press: root.parent.parent.ShuffleSongs()
+    Button:
+        text: 'Double Shuffle'
+        on_press: root.parent.parent.DoubleShuffle()
+    Button:
+        text: 'Album Shuffle'
+        on_press: root.parent.parent.AlbumShuffle()
+
+<IpodScreen>:
+    album_cover: ''
+    play_mode: 'Shuffle Song'
+    FloatLayout:
+        size_hint: None, None
+        size: 800, 480
+        pos: 0,0
+        BoxLayout:
+            id: song_info
+            orientation: 'vertical'
+            size_hint: None, None
+            x: 90
+            height: 200
+            width: 400
+            center_y: 305
+            canvas:
+                Color:
+                    rgba: [0,0,1,.5]
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            Label:
+                text: 'Song Title'
+            Label:
+                text: 'Album Name'
+            Label:
+                text: 'Artist'
+        Image:
+            id: album_cover_img
+            source: root.album_cover
+            size_hint: None, None
+            height: song_info.height
+            width: self.height
+            x: 500
+            center_y: song_info.center_y
+            allow_stretch: False
+        Label:
+            id: play_mode_lbl
+            text: root.play_mode
+            size_hint: None, None
+            size: album_cover_img.width, 20
+            x: album_cover_img.x
+            y: album_cover_img.y - self.height
+        SongProgress:
+            id: song_progress
+            size_hint: None, None
+            height: 15
+            width: album_cover_img.right - song_info.x
+            x: song_info.x
+            y: song_info.y - self.height - 10
+        PlayerContols:
+            id: player_control
+            button_size: 40
+            size_hint: None, None
+            center_x: 400
+            y: song_progress.y - self.height - 10
+        PlayerModes:
+            size_hint: None, None
+            width: album_cover_img.right - song_info.x
+            height: 40
+            x: song_info.x
+            y: player_control.y - self.height - 10
+
 
 <RadioScreen@Screen>:
 
