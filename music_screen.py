@@ -31,21 +31,43 @@ class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior,
                                  RecycleBoxLayout):
     pass
 
-
 class SelectionViewClass(RecycleDataViewBehavior, BoxLayout):
-
-    text = StringProperty("")
+    song = StringProperty("")
     artist = StringProperty('')
     album = StringProperty('')
+    playlit = StringProperty('')
     index = None
 
     #def set_state(self, state, app):
-    #    app.root.ids.rv.data[self.index]['selected'] = state
+        #    app.root.ids.rv.data[self.index]['selected'] = state
 
     def refresh_view_attrs(self, rv, index, data):
         self.index = index
-        return super(SelectionViewClass, self).refresh_view_attrs(rv, index, data)
+        return super().refresh_view_attrs(rv, index, data)
 
+class SongSelectionViewClass(SelectionViewClass):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.register_event_type('on_new_song')
+
+    def trigger_custom_event(self, *args):
+        self.dispatch('on_new_song', self.song)
+
+    def on_new_song(self, *args):
+        pass
+
+    def play_song(self, song, artist, album):
+        self.trigger_custom_event()
+
+class ArtistSelectionViewClass(SelectionViewClass):
+    pass
+
+class AlbumSelectionViewClass(SelectionViewClass):
+    pass
+
+class PlayListSelectionViewClass(SelectionViewClass):
+    pass
 
 class SelectionView(RecycleView):
     data = []
@@ -91,26 +113,27 @@ class IpodSelectionScreen(Screen):
         return albums_lst
 
     def extract_songs(self):
-        song_list = [{'text': song, 'artist': artist, 'album': album, 'selected': 'normal', 'input_data': song}
+        song_list = [{'song': song, 'artist': artist, 'album': album, 'selected': 'normal', 'input_data': song}
                           for artists in self.albums_lst
                           for (artist, albums) in artists.items()
                           for (album, songs) in albums.items() for song in songs]
+        song_list = sorted(song_list, key=lambda k: ("song" not in k, k.get('song', None)))
         self.ids.search_bar.ids.rv.update_data(song_list)
 
+    def extract_artists(self):
+        artist_list = [{'artist': artist + '  [' + str(len(albums)) + ']', 'selected': 'normal', 'input_data': artist}
+                      for artists in self.albums_lst
+                      for (artist, albums) in artists.items()]
+        artist_list = sorted(artist_list, key=lambda k: ("artist" not in k, k.get('artist', None)))
+        self.ids.search_bar.ids.rv.update_data(artist_list)
+
     def extract_albums(self):
-        album_list = [{'text': album, 'selected': 'normal', 'input_data': album}
+        album_list = [{'album': album, 'artist': artist, 'selected': 'normal', 'input_data': album}
                       for artists in self.albums_lst
                       for (artist, albums) in artists.items()
                       for (album, _) in albums.items()]
-
+        album_list = sorted(album_list, key=lambda k: ("album" not in k, k.get('album', None)))
         self.ids.search_bar.ids.rv.update_data(album_list)
-
-    def extract_artists(self):
-        artist_list = [{'text': artist + '  [' + str(len(albums)) + ']', 'selected': 'normal', 'input_data': artist}
-                      for artists in self.albums_lst
-                      for (artist, albums) in artists.items()]
-
-        self.ids.search_bar.ids.rv.update_data(artist_list)
 
     def extract_playlists(self):
         self.ids.search_bar.ids.rv.update_data([])

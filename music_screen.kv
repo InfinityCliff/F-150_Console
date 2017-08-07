@@ -34,10 +34,65 @@
         on_press:
 
 # ^Side Menu ----------------------------------------------------------------^
-<SelectionViewClass>:
-    # orientation: 'horizontal'
+<SelectionLabel@Label>:
+    text_size: (self.width - 20), self.height
+    halign: 'left'
+    valign: 'center'
+    font_size: 20
+    #font_name: 'arial'
+
+<SongSelectionViewClass>:
     Button:
-        #text: root.text
+        canvas:
+            Color:
+                rgba: [0,0,1,.5]
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        on_release: root.play_song(root.song, root.artist, root.album)
+        BoxLayout
+            size_hint: None, None
+            pos: self.parent.pos
+            size: self.parent.size
+            SelectionLabel:
+                text: root.song
+            SelectionLabel:
+                text: root.artist
+
+<ArtistSelectionViewClass>:
+    Button:
+        canvas:
+            Color:
+                rgba: [0,0,1,.5]
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        BoxLayout
+            size_hint: None, None
+            pos: self.parent.pos
+            size: self.parent.size
+            SelectionLabel:
+                text: root.artist
+
+<AlbumSelectionViewClass>:
+    Button:
+        canvas:
+            Color:
+                rgba: [0,0,1,.5]
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        BoxLayout
+            size_hint: None, None
+            pos: self.parent.pos
+            size: self.parent.size
+            SelectionLabel:
+                text: root.album
+            SelectionLabel:
+                text: root.artist
+
+<PlayListSelectionViewClass>:
+    Button:
         canvas:
             Color:
                 rgba: [0,0,1,.5]
@@ -49,11 +104,7 @@
             pos: self.parent.pos
             size: self.parent.size
             Label:
-                text: root.text
-            Label:
-                text: root.artist
-            Label:
-                text: root.album
+                text: root.playlist
 
 <SearchBar>:
     orientation: 'vertical'
@@ -66,11 +117,11 @@
             text: 'S'
     SelectionView:
         id: rv
-        viewclass: 'SelectionViewClass'
+        viewclass: 'SongSelectionViewClass'
 
-        SelectableRecycleBoxLayout:
+        RecycleBoxLayout:
             orientation: 'vertical'
-            default_size: None, dp(56)
+            default_size: None, 40
             default_size_hint: 1, None
             size_hint_y: None
             height: self.minimum_height
@@ -91,19 +142,27 @@
             ToggleButton:
                 group: 'ipodlistelector'
                 text: 'Song'
-                on_press: root.extract_songs()
-            ToggleButton:
-                group: 'ipodlistelector'
-                text: 'Album'
-                on_press: root.extract_albums()
+                on_press:
+                    root.extract_songs()
+                    root.ids.search_bar.ids.rv.viewclass = 'SongSelectionViewClass'
             ToggleButton:
                 group: 'ipodlistelector'
                 text: 'Artist'
-                on_press: root.extract_artists()
+                on_press:
+                    root.extract_artists()
+                    root.ids.search_bar.ids.rv.viewclass = 'ArtistSelectionViewClass'
+            ToggleButton:
+                group: 'ipodlistelector'
+                text: 'Album'
+                on_press:
+                    root.extract_albums()
+                    root.ids.search_bar.ids.rv.viewclass = 'AlbumSelectionViewClass'
             ToggleButton:
                 group: 'ipodlistelector'
                 text: 'Playlist'
-                on_press: root.extract_playlists()
+                on_press:
+                    root.extract_playlists()
+                    root.ids.search_bar.ids.rv.viewclass = 'PlayListSelectionViewClass'
         SearchBar:
             id: search_bar
             size_hint: None, None
