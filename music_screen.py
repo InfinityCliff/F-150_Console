@@ -38,7 +38,7 @@ class SelectionViewClass(RecycleDataViewBehavior, BoxLayout):
     playlit = StringProperty('')
     index = None
 
-    #def set_state(self, state, app):
+    #def set_state(self, state, app):pass
         #    app.root.ids.rv.data[self.index]['selected'] = state
 
     def refresh_view_attrs(self, rv, index, data):

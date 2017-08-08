@@ -1,0 +1,22 @@
+EventRoot:
+<Box1>:
+    Button:
+        text: 'box 1 button'
+        on_press: root.change_label2('bugs')
+    Label:
+        id: lbl
+        text: 'box 1 Label'
+<Box2>:
+    label2: label2
+    Button:
+        text: 'box 2 button'
+
+    Label:
+        id: label2
+        text: 'box 2 Label'
+
+<EventRoot>:
+    orientation: 'vertical'
+    Box1:
+    Box2:
+        id: box2

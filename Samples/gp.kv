@@ -1,0 +1,35 @@
+<Get_People>:
+    stuff_p: root_lbl
+    orientation: 'vertical'
+    Button:
+        name: root_btn
+        id: root_btn
+        text: "I am Root Button"
+        on_release: root.rooted()
+    Label:
+        id: root_lbl
+        text: "I am Root Label"
+    Get_Boys:
+        id: gb
+    Get_Girls:
+        id: gg
+
+<Get_Boys>:
+    stuff_b: label_b
+    Button:
+        id: button_b
+        text: "Button for boys"
+        on_press: root.change_girl()
+        on_release: root.change_people()
+    Label:
+        id: label_b
+        text: "Label for boys"
+
+<Get_Girls>:
+    stuff_c: label_g
+    Button:
+        id: button_g
+        text: "Button for girls"
+    Label:
+        id: label_g
+        text:"Label for girls"
