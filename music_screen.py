@@ -27,15 +27,17 @@ music_screen_kv = """
 #:include music_screen.kv
 """
 
-class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior,
-                                 RecycleBoxLayout):
-    pass
+#class SelectableRecycleBoxLayout(FocusBehavior, LayoutSelectionBehavior,
+#                                 RecycleBoxLayout):
+#    pass
+
 
 class SelectionViewClass(RecycleDataViewBehavior, BoxLayout):
-    song = StringProperty("")
+    song = StringProperty('')
     artist = StringProperty('')
     album = StringProperty('')
-    playlit = StringProperty('')
+    playlist = StringProperty('')
+
     index = None
 
     #def set_state(self, state, app):pass
@@ -45,29 +47,27 @@ class SelectionViewClass(RecycleDataViewBehavior, BoxLayout):
         self.index = index
         return super().refresh_view_attrs(rv, index, data)
 
-class SongSelectionViewClass(SelectionViewClass):
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.register_event_type('on_new_song')
-
-    def trigger_custom_event(self, *args):
-        self.dispatch('on_new_song', self.song)
-
-    def on_new_song(self, *args):
-        pass
-
     def play_song(self, song, artist, album):
-        self.trigger_custom_event()
+        man = self.parent.parent.parent.parent.parent.manager
+        man.current = 'ipod'
+        man.current_screen.PlaySong(song, artist, album)
+
+
+class SongSelectionViewClass(SelectionViewClass):
+    pass
+
 
 class ArtistSelectionViewClass(SelectionViewClass):
     pass
 
+
 class AlbumSelectionViewClass(SelectionViewClass):
     pass
 
+
 class PlayListSelectionViewClass(SelectionViewClass):
     pass
+
 
 class SelectionView(RecycleView):
     data = []
@@ -79,6 +79,7 @@ class SelectionView(RecycleView):
 
 class SearchBar(BoxLayout):
     selection_view = ObjectProperty()
+    #song = StringProperty()
 
     def add_AlphaButtons(self, widget):
         for x in '#ABCDEFGHIJKLMNOPQRSTUVWXYZ':
@@ -101,7 +102,7 @@ albums_lst = [
 
 
 class IpodSelectionScreen(Screen):
-    #selection_view = ObjectProperty()
+    search_bar = ObjectProperty()
     albums_lst = []
 
     def __init__(self, **kwargs):
@@ -142,6 +143,9 @@ class IpodSelectionScreen(Screen):
 class IpodScreen(Screen):
     album_cover = StringProperty("")
     play_mode = StringProperty("Shuffle Song")
+    song = StringProperty()
+    artist = StringProperty()
+    album = StringProperty()
 
     def PlayAlbum(self):
         print('switch to first song and play ablum')
@@ -154,6 +158,12 @@ class IpodScreen(Screen):
 
     def AlbumShuffle(self):
         print('shuffle all albums')
+
+    def PlaySong(self, song, artist, album):
+        self.song = song
+        self.artist = artist
+        self.album = album
+        print ("Playing: {}, by {} on album {}".format(song, artist, album))
 
 
 class MusicManager(ScreenManager):

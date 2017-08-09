@@ -49,7 +49,9 @@
             Rectangle:
                 size: self.size
                 pos: self.pos
-        on_release: root.play_song(root.song, root.artist, root.album)
+        on_release:
+            root.play_song(root.song, root.artist, root.album)
+            #current_song = song_title.text
         BoxLayout
             size_hint: None, None
             pos: self.parent.pos
@@ -107,6 +109,7 @@
                 text: root.playlist
 
 <SearchBar>:
+    selection_view: rv
     orientation: 'vertical'
     BoxLayout:
         size_hint_y: None
@@ -128,6 +131,7 @@
 
 
 <IpodSelectionScreen>:
+    search_bar: search_bar
     size_hint_y1: 0.7
     FloatLayout:
         size_hint: None, None
@@ -205,6 +209,12 @@
         text: 'Album Shuffle'
         on_press: root.parent.parent.AlbumShuffle()
 
+<IpodLabel@Label>:
+    text_size: (self.width - 20), self.height
+    halign: 'left'
+    valign: 'center'
+    font_size: 20
+
 <IpodScreen>:
     album_cover: ''
     play_mode: 'Shuffle Song'
@@ -226,12 +236,12 @@
                 Rectangle:
                     size: self.size
                     pos: self.pos
-            Label:
-                text: 'Song Title'
-            Label:
-                text: 'Album Name'
-            Label:
-                text: 'Artist'
+            IpodLabel:
+                text: root.song
+            IpodLabel:
+                text: root.album
+            IpodLabel:
+                text: root.artist
         Image:
             id: album_cover_img
             source: root.album_cover
